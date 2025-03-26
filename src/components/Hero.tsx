@@ -3,8 +3,46 @@ import { ArrowRight, Truck, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TrustedCompanies } from "@/components/TrustedCompanies";
 import { cn } from "@/lib/utils";
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from "@/components/ui/carousel";
 
 export function Hero() {
+  const testimonials = [
+    {
+      image: "/images/driver-testimonial-1.jpg",
+      name: "Michael Schmidt",
+      role: "Truck Driver",
+      company: "Joined via DriverMatch",
+      quote: "DriverMatch helped me find a job that aligns with my schedule and pays 20% more than my previous position."
+    },
+    {
+      image: "/images/company-testimonial-1.jpg",
+      name: "Sarah Anderson",
+      role: "Recruitment Manager",
+      company: "Fast Freight Europe",
+      quote: "We've reduced our driver hiring time by 65% since using DriverMatch's intelligent matching system."
+    },
+    {
+      image: "/images/driver-testimonial-2.jpg",
+      name: "Thomas Weber",
+      role: "Delivery Driver",
+      company: "Joined via DriverMatch",
+      quote: "The platform matched me with a company that offers the perfect work-life balance I was looking for."
+    },
+    {
+      image: "/images/company-testimonial-2.jpg",
+      name: "Jennifer Rogers",
+      role: "Operations Director",
+      company: "Express Logistics",
+      quote: "DriverMatch's vetting process ensures we only interview qualified drivers, saving us countless hours."
+    }
+  ];
+
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center pt-16 px-6">
       {/* Background shapes */}
@@ -39,6 +77,43 @@ export function Hero() {
         
         <div className="pt-12">
           <TrustedCompanies />
+        </div>
+
+        {/* Testimonial Carousel */}
+        <div className="pt-12 w-full">
+          <Carousel className="w-full max-w-4xl mx-auto">
+            <CarouselContent>
+              {testimonials.map((testimonial, index) => (
+                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/2">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 h-full flex flex-col">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden">
+                        <img 
+                          src={testimonial.image} 
+                          alt={testimonial.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "https://placehold.co/200x200/primary/white?text=DM";
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-base">{testimonial.name}</h3>
+                        <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                        <p className="text-xs text-primary">{testimonial.company}</p>
+                      </div>
+                    </div>
+                    <p className="italic text-muted-foreground">"{testimonial.quote}"</p>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="hidden md:flex">
+              <CarouselPrevious className="ml-0 -left-4" />
+              <CarouselNext className="mr-0 -right-4" />
+            </div>
+          </Carousel>
         </div>
       </div>
       
