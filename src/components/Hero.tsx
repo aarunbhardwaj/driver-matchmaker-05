@@ -1,6 +1,7 @@
 
 import { ArrowRight, Truck, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TrustedCompanies } from "@/components/TrustedCompanies";
 import { cn } from "@/lib/utils";
 
 export function Hero() {
@@ -37,16 +38,7 @@ export function Hero() {
         </div>
         
         <div className="pt-12">
-          <p className="text-sm text-muted-foreground mb-4">Trusted by industry leaders</p>
-          <div className="flex flex-wrap justify-center gap-8 opacity-70">
-            {/* Company logos would go here */}
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div 
-                key={i} 
-                className="h-8 w-32 bg-foreground/10 rounded-md animate-pulse"
-              ></div>
-            ))}
-          </div>
+          <TrustedCompanies />
         </div>
       </div>
       
