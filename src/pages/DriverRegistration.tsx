@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Truck, ArrowLeft, User, CheckCircle2 } from "lucide-react";
+import { Truck, ArrowLeft, User, CheckCircle2, FileText, Linkedin, Instagram, Facebook, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
 
@@ -30,6 +31,11 @@ const formSchema = z.object({
   experience: z.string().min(1, "Years of experience is required"),
   skills: z.string(),
   availability: z.string(),
+  linkedinUrl: z.string().url("Please enter a valid URL").or(z.string().length(0)),
+  facebookUrl: z.string().url("Please enter a valid URL").or(z.string().length(0)),
+  instagramUrl: z.string().url("Please enter a valid URL").or(z.string().length(0)),
+  twitterUrl: z.string().url("Please enter a valid URL").or(z.string().length(0)),
+  cvFile: z.any().optional(),
   termsAccepted: z.literal(true, {
     errorMap: () => ({ message: "You must accept the terms and conditions" }),
   }),
@@ -39,6 +45,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function DriverRegistration() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const navigate = useNavigate();
   
   const form = useForm<FormValues>({
@@ -52,16 +59,43 @@ export default function DriverRegistration() {
       experience: "",
       skills: "",
       availability: "",
+      linkedinUrl: "",
+      facebookUrl: "",
+      instagramUrl: "",
+      twitterUrl: "",
       termsAccepted: false,
     },
   });
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      form.setValue("cvFile", file);
+    }
+  };
+
   function onSubmit(data: FormValues) {
     setIsSubmitting(true);
+    
+    // Create FormData object to handle file upload
+    const formData = new FormData();
+    // Add all form fields to FormData
+    Object.entries(data).forEach(([key, value]) => {
+      if (key !== "cvFile") {
+        formData.append(key, value as string);
+      }
+    });
+    
+    // Add the file if it exists
+    if (selectedFile) {
+      formData.append("cvFile", selectedFile);
+    }
     
     // Simulate API call
     setTimeout(() => {
       console.log("Driver registration data:", data);
+      console.log("Selected file:", selectedFile);
       setIsSubmitting(false);
       
       toast({
@@ -229,6 +263,112 @@ export default function DriverRegistration() {
                   </FormItem>
                 )}
               />
+
+              {/* CV Upload Field */}
+              <div className="space-y-2">
+                <FormLabel>Resume/CV Upload</FormLabel>
+                <div className="border rounded-md p-4 flex flex-col items-center justify-center gap-4 bg-muted/30">
+                  <div className="bg-primary/10 p-3 rounded-full">
+                    <FileText className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium mb-1">Upload your resume or CV</p>
+                    <p className="text-xs text-muted-foreground mb-2">PDF, DOC, or DOCX up to 5MB</p>
+                  </div>
+                  <div className="relative w-full">
+                    <Input 
+                      type="file" 
+                      id="cv-upload"
+                      accept=".pdf,.doc,.docx"
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      onChange={handleFileChange}
+                    />
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      className="w-full relative z-10"
+                    >
+                      {selectedFile ? 'Change File' : 'Select File'}
+                    </Button>
+                  </div>
+                  {selectedFile && (
+                    <p className="text-sm text-primary mt-2 w-full truncate text-center">
+                      {selectedFile.name}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Social Media Links */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Social Media Links (Optional)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="linkedinUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Linkedin className="h-4 w-4" />
+                          LinkedIn
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://linkedin.com/in/yourprofile" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="facebookUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Facebook className="h-4 w-4" />
+                          Facebook
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://facebook.com/yourprofile" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="instagramUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Instagram className="h-4 w-4" />
+                          Instagram
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://instagram.com/yourprofile" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="twitterUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Twitter className="h-4 w-4" />
+                          Twitter
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://twitter.com/yourprofile" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
 
               <FormField
                 control={form.control}
