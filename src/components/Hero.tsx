@@ -3,6 +3,7 @@ import { ArrowRight, Truck, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TrustedCompanies } from "@/components/TrustedCompanies";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 import { 
   Carousel,
   CarouselContent,
@@ -62,16 +63,20 @@ export function Hero() {
         </p>
         
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button size="lg" className="group gap-2 hover-lift text-lg px-8 py-6">
-            <User className="h-5 w-5" />
-            <span>I'm a Driver</span>
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          <Button size="lg" className="group gap-2 hover-lift text-lg px-8 py-6" asChild>
+            <Link to="/driver-registration">
+              <User className="h-5 w-5" />
+              <span>I'm a Driver</span>
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
           </Button>
           
-          <Button size="lg" variant="outline" className="group gap-2 hover-lift text-lg px-8 py-6">
-            <Truck className="h-5 w-5" />
-            <span>I'm a Company</span>
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          <Button size="lg" variant="outline" className="group gap-2 hover-lift text-lg px-8 py-6" asChild>
+            <Link to="/company-registration">
+              <Truck className="h-5 w-5" />
+              <span>I'm a Company</span>
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
           </Button>
         </div>
         

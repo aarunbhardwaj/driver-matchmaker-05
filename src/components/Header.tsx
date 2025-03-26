@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, Truck, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -23,10 +24,10 @@ export function Header() {
       isScrolled ? "glass shadow-sm" : "bg-transparent"
     )}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <a href="/" className="flex items-center space-x-2">
+        <Link to="/" className="flex items-center space-x-2">
           <Truck className="h-8 w-8 text-primary" />
           <span className="font-bold text-xl tracking-tight">DriverMatch</span>
-        </a>
+        </Link>
         
         <nav className="hidden md:flex items-center space-x-8">
           <a href="#how-it-works" className="text-foreground/80 hover:text-foreground transition-colors">
@@ -45,7 +46,7 @@ export function Header() {
             Log in
           </Button>
           <Button className="hover-lift">
-            Sign up
+            <Link to="/driver-registration">Sign up</Link>
           </Button>
         </div>
         
@@ -88,8 +89,8 @@ export function Header() {
             <Button variant="outline" className="w-full justify-center">
               Log in
             </Button>
-            <Button className="w-full justify-center">
-              Sign up
+            <Button className="w-full justify-center" asChild>
+              <Link to="/driver-registration">Sign up</Link>
             </Button>
           </div>
         </div>
