@@ -66,7 +66,9 @@ export function DriverHeader() {
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" /> Profile
+                <Link to="/driver-profile" className="flex items-center">
+                  <User className="mr-2 h-4 w-4" /> Profile
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Settings className="mr-2 h-4 w-4" /> Settings
@@ -118,6 +120,13 @@ export function DriverHeader() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Certifications
+            </Link>
+            <Link 
+              to="/driver-profile" 
+              className="text-foreground hover:text-primary transition-colors py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              My Profile
             </Link>
           </nav>
           

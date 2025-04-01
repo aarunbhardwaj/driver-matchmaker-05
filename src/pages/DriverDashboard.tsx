@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -114,7 +113,7 @@ const DriverDashboard = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button variant="outline" onClick={() => navigate("/profile")}>
+            <Button variant="outline" onClick={() => navigate("/driver-profile")}>
               <User className="mr-2 h-4 w-4" /> Profile
             </Button>
             <Button>
@@ -124,7 +123,7 @@ const DriverDashboard = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg">Job Match Score</CardTitle>
@@ -181,36 +180,6 @@ const DriverDashboard = () => {
                   <span className="text-xs text-muted-foreground">3 days ago</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Next Scheduled Shift</CardTitle>
-              <CardDescription>Your upcoming work</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-2">
-              {upcomingShifts.length > 0 ? (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Calendar className="h-5 w-5 text-primary" />
-                    <span className="font-medium">{upcomingShifts[0].date}</span>
-                  </div>
-                  <h4 className="font-semibold">{upcomingShifts[0].title}</h4>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    <span>{upcomingShifts[0].company}</span>
-                  </div>
-                  <div className="bg-muted px-3 py-1 rounded-md inline-block">
-                    {upcomingShifts[0].time}
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-24 text-center">
-                  <p className="text-muted-foreground mb-2">No upcoming shifts</p>
-                  <Button variant="outline" size="sm">Find jobs</Button>
-                </div>
-              )}
             </CardContent>
           </Card>
         </div>
