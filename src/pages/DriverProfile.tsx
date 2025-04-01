@@ -30,11 +30,14 @@ import {
   Mail,
   Edit,
   Check,
-  X
+  X,
+  Briefcase
 } from "lucide-react";
 
 import { DriverHeader } from "@/components/DriverHeader";
 import { Footer } from "@/components/Footer";
+import { PreferencesForm } from "@/components/driver-profile/PreferencesForm";
+import { toast } from "@/hooks/use-toast";
 
 // Define form schema for profile editing
 const profileFormSchema = z.object({
@@ -58,6 +61,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 const DriverProfile = () => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
+  const [isPreferencesSubmitting, setIsPreferencesSubmitting] = useState(false);
 
   // Mock data - in a real app, this would come from an API
   const driverData = {
@@ -87,6 +91,21 @@ const DriverProfile = () => {
     }
   };
 
+  // Mock preferences data - in a real app, this would come from an API
+  const preferencesData = {
+    jobTypes: ["truck", "delivery"],
+    vehicleTypes: ["truck", "van"],
+    location: {
+      city: "Chicago",
+      state: "IL",
+      radius: "50",
+    },
+    internationalTravel: false,
+    availability: "full_time",
+    permits: ["cdl_a", "hazmat"],
+    minimumHourlyRate: "22",
+  };
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -111,6 +130,23 @@ const DriverProfile = () => {
     // In a real app, this would send the data to an API
     setIsEditing(false);
     // Show success message
+    toast({
+      title: "Profile Updated",
+      description: "Your profile has been successfully updated.",
+    });
+  }
+
+  function handlePreferencesSubmit(data: any) {
+    setIsPreferencesSubmitting(true);
+    // Simulate API call
+    setTimeout(() => {
+      console.log("Preferences data:", data);
+      setIsPreferencesSubmitting(false);
+      toast({
+        title: "Preferences Saved",
+        description: "Your job preferences have been updated.",
+      });
+    }, 1000);
   }
 
   return (
@@ -201,6 +237,10 @@ const DriverProfile = () => {
                 <TabsTrigger value="certifications">
                   <Award className="w-4 h-4 mr-2" />
                   Certifications
+                </TabsTrigger>
+                <TabsTrigger value="preferences">
+                  <Briefcase className="w-4 h-4 mr-2" />
+                  Job Preferences
                 </TabsTrigger>
               </TabsList>
               
@@ -517,6 +557,24 @@ const DriverProfile = () => {
                         </Button>
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="preferences">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Job Preferences</CardTitle>
+                    <CardDescription>
+                      Set your work preferences to help us match you with the right opportunities
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <PreferencesForm 
+                      onSubmit={handlePreferencesSubmit} 
+                      isSubmitting={isPreferencesSubmitting} 
+                      defaultValues={preferencesData}
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>
