@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import DriverRegistration from "./pages/DriverRegistration";
 import CompanyRegistration from "./pages/CompanyRegistration";
+import DriverDashboard from "./pages/DriverDashboard";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/driver-registration" element={<DriverRegistration />} />
           <Route path="/company-registration" element={<CompanyRegistration />} />
+          <Route path="/driver-dashboard" element={<DriverDashboard />} />
           {/* Add more routes here later */}
           <Route path="*" element={<NotFound />} />
         </Routes>
