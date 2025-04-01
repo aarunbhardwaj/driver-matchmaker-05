@@ -43,7 +43,7 @@ export function Header() {
         
         <div className="hidden md:flex items-center space-x-4">
           <Button variant="outline" className="hover-lift">
-            Log in
+            <Link to="/driver-dashboard">Log in</Link>
           </Button>
           <Button className="hover-lift">
             <Link to="/driver-registration">Sign up</Link>
@@ -86,8 +86,8 @@ export function Header() {
           </nav>
           
           <div className="flex flex-col space-y-3">
-            <Button variant="outline" className="w-full justify-center">
-              Log in
+            <Button variant="outline" className="w-full justify-center" asChild>
+              <Link to="/driver-dashboard">Log in</Link>
             </Button>
             <Button className="w-full justify-center" asChild>
               <Link to="/driver-registration">Sign up</Link>

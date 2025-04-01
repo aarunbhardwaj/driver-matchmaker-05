@@ -1,6 +1,7 @@
 
 import { Check, ArrowRight, FileCheck, Award, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const benefits = [
   "Get matched with jobs that fit your skills and preferences",
@@ -37,9 +38,11 @@ export function DriverSection() {
               ))}
             </ul>
             
-            <Button size="lg" className="group mt-4 hover-lift">
-              <span>Create Driver Profile</span>
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <Button size="lg" className="group mt-4 hover-lift" asChild>
+              <Link to="/driver-dashboard">
+                <span>Create Driver Profile</span>
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
             </Button>
           </div>
           
