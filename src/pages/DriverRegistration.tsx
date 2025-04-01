@@ -36,8 +36,8 @@ const formSchema = z.object({
   instagramUrl: z.string().url("Please enter a valid URL").or(z.string().length(0)),
   twitterUrl: z.string().url("Please enter a valid URL").or(z.string().length(0)),
   cvFile: z.any().optional(),
-  termsAccepted: z.literal(true, {
-    errorMap: () => ({ message: "You must accept the terms and conditions" }),
+  termsAccepted: z.boolean().refine(val => val === true, {
+    message: "You must accept the terms and conditions",
   }),
 });
 

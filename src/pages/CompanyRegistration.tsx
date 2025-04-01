@@ -31,8 +31,8 @@ const formSchema = z.object({
   companySize: z.string().min(1, "Company size is required"),
   description: z.string(),
   hiringNeeds: z.string(),
-  termsAccepted: z.literal(true, {
-    errorMap: () => ({ message: "You must accept the terms and conditions" }),
+  termsAccepted: z.boolean().refine(val => val === true, {
+    message: "You must accept the terms and conditions",
   }),
 });
 
