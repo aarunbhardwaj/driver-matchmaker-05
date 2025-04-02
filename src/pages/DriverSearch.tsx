@@ -28,7 +28,10 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Search, Filter, MapPin, Truck, Star, Download } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Badge } from "@/components/ui/badge";
 
 // Mock data for drivers
 const MOCK_DRIVERS = [
@@ -41,6 +44,10 @@ const MOCK_DRIVERS = [
     availability: "Immediate",
     rating: 4.8,
     skills: ["Long-haul", "Refrigerated"],
+    jobTypes: ["truck", "delivery"],
+    vehicleTypes: ["truck"],
+    shiftPreferences: ["morning", "afternoon"],
+    employmentType: "permanent",
   },
   {
     id: 2,
@@ -51,6 +58,10 @@ const MOCK_DRIVERS = [
     availability: "2 weeks",
     rating: 4.9,
     skills: ["Hazardous Materials", "International"],
+    jobTypes: ["truck"],
+    vehicleTypes: ["truck"],
+    shiftPreferences: ["night", "evening"],
+    employmentType: "freelance",
   },
   {
     id: 3,
@@ -61,6 +72,10 @@ const MOCK_DRIVERS = [
     availability: "Immediate",
     rating: 4.5,
     skills: ["Local delivery", "Van"],
+    jobTypes: ["delivery", "courier"],
+    vehicleTypes: ["van", "car"],
+    shiftPreferences: ["morning", "afternoon"],
+    employmentType: "either",
   },
   {
     id: 4,
@@ -71,6 +86,10 @@ const MOCK_DRIVERS = [
     availability: "1 month",
     rating: 5.0,
     skills: ["Long-haul", "International", "Hazardous Materials"],
+    jobTypes: ["truck"],
+    vehicleTypes: ["truck"],
+    shiftPreferences: ["evening", "night"],
+    employmentType: "permanent",
   },
   {
     id: 5,
@@ -81,6 +100,10 @@ const MOCK_DRIVERS = [
     availability: "Immediate",
     rating: 4.6,
     skills: ["Urban delivery", "Light truck"],
+    jobTypes: ["delivery", "rideshare", "courier"],
+    vehicleTypes: ["van", "car"],
+    shiftPreferences: ["weekend"],
+    employmentType: "freelance",
   },
 ];
 
@@ -88,6 +111,37 @@ const MOCK_DRIVERS = [
 const EXPERIENCE_OPTIONS = ["Any", "0-2 years", "3-5 years", "5+ years", "10+ years"];
 const LICENSE_OPTIONS = ["Class B", "Class C", "Class CE", "Class D"];
 const AVAILABILITY_OPTIONS = ["Any", "Immediate", "Within 2 weeks", "Within a month"];
+const JOB_TYPE_OPTIONS = [
+  { id: "taxi", label: "Taxi Driver" },
+  { id: "rideshare", label: "Rideshare" },
+  { id: "delivery", label: "Delivery" },
+  { id: "bus", label: "Bus Driver" },
+  { id: "truck", label: "Truck Driver" },
+  { id: "courier", label: "Courier" },
+  { id: "chauffeur", label: "Chauffeur" },
+  { id: "moving", label: "Moving Services" },
+];
+const VEHICLE_TYPE_OPTIONS = [
+  { id: "car", label: "Car" },
+  { id: "van", label: "Van" },
+  { id: "bus", label: "Bus" },
+  { id: "minibus", label: "Mini-Bus" },
+  { id: "truck", label: "Truck" },
+  { id: "motorbike", label: "Motorbike" },
+  { id: "bicycle", label: "Bicycle" },
+];
+const SHIFT_OPTIONS = [
+  { id: "morning", label: "Morning" },
+  { id: "afternoon", label: "Afternoon" },
+  { id: "evening", label: "Evening" },
+  { id: "night", label: "Night" },
+  { id: "weekend", label: "Weekend" },
+];
+const EMPLOYMENT_OPTIONS = [
+  { id: "permanent", label: "Permanent" },
+  { id: "freelance", label: "Freelance" },
+  { id: "either", label: "Either" },
+];
 
 const DriverSearch = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -95,6 +149,11 @@ const DriverSearch = () => {
     experience: "Any",
     license: "Any",
     availability: "Any",
+    radius: [50],
+    jobTypes: [],
+    vehicleTypes: [],
+    shiftPreferences: [],
+    employmentType: "Any",
   });
   const [showFilters, setShowFilters] = useState(false);
   const [drivers, setDrivers] = useState(MOCK_DRIVERS);
@@ -112,11 +171,94 @@ const DriverSearch = () => {
       );
     }
 
+    // Apply filters
+    if (filters.experience !== "Any") {
+      filteredDrivers = filteredDrivers.filter(driver => {
+        const years = parseInt(driver.experience);
+        if (filters.experience === "0-2 years") return years < 3;
+        if (filters.experience === "3-5 years") return years >= 3 && years <= 5;
+        if (filters.experience === "5+ years") return years > 5;
+        if (filters.experience === "10+ years") return years >= 10;
+        return true;
+      });
+    }
+
+    if (filters.license !== "Any") {
+      filteredDrivers = filteredDrivers.filter(driver => 
+        driver.licenseTypes.includes(filters.license)
+      );
+    }
+
+    if (filters.availability !== "Any") {
+      filteredDrivers = filteredDrivers.filter(driver => {
+        if (filters.availability === "Immediate") return driver.availability === "Immediate";
+        if (filters.availability === "Within 2 weeks") return ["Immediate", "2 weeks"].includes(driver.availability);
+        if (filters.availability === "Within a month") return ["Immediate", "2 weeks", "1 month"].includes(driver.availability);
+        return true;
+      });
+    }
+
+    // Filter by job types
+    if (filters.jobTypes.length > 0) {
+      filteredDrivers = filteredDrivers.filter(driver => 
+        filters.jobTypes.some(jobType => driver.jobTypes.includes(jobType))
+      );
+    }
+
+    // Filter by vehicle types
+    if (filters.vehicleTypes.length > 0) {
+      filteredDrivers = filteredDrivers.filter(driver => 
+        filters.vehicleTypes.some(vehicleType => driver.vehicleTypes.includes(vehicleType))
+      );
+    }
+
+    // Filter by shift preferences
+    if (filters.shiftPreferences.length > 0) {
+      filteredDrivers = filteredDrivers.filter(driver => 
+        filters.shiftPreferences.some(shift => driver.shiftPreferences.includes(shift))
+      );
+    }
+
+    // Filter by employment type
+    if (filters.employmentType !== "Any") {
+      filteredDrivers = filteredDrivers.filter(driver => 
+        driver.employmentType === filters.employmentType || driver.employmentType === "either"
+      );
+    }
+
     setDrivers(filteredDrivers);
   };
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
+  };
+
+  const handleCheckboxChange = (field, id) => {
+    setFilters(prev => {
+      const updated = [...prev[field]];
+      const index = updated.indexOf(id);
+      
+      if (index > -1) {
+        updated.splice(index, 1);
+      } else {
+        updated.push(id);
+      }
+      
+      return { ...prev, [field]: updated };
+    });
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      experience: "Any",
+      license: "Any",
+      availability: "Any",
+      radius: [50],
+      jobTypes: [],
+      vehicleTypes: [],
+      shiftPreferences: [],
+      employmentType: "Any",
+    });
   };
 
   return (
@@ -156,62 +298,171 @@ const DriverSearch = () => {
         {showFilters && (
           <Card className="mb-6 animate-in fade-in-50 duration-300">
             <CardContent className="pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Experience</label>
-                  <Select 
-                    value={filters.experience}
-                    onValueChange={(value) => setFilters({...filters, experience: value})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Any experience" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {EXPERIENCE_OPTIONS.map((option) => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              <div className="grid grid-cols-1 gap-6">
+                {/* Basic filters section */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Experience</label>
+                    <Select 
+                      value={filters.experience}
+                      onValueChange={(value) => setFilters({...filters, experience: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Any experience" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {EXPERIENCE_OPTIONS.map((option) => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">License Type</label>
+                    <Select 
+                      value={filters.license}
+                      onValueChange={(value) => setFilters({...filters, license: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Any license" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Any">Any</SelectItem>
+                        {LICENSE_OPTIONS.map((option) => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Availability</label>
+                    <Select 
+                      value={filters.availability}
+                      onValueChange={(value) => setFilters({...filters, availability: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Any availability" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {AVAILABILITY_OPTIONS.map((option) => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 
+                {/* Job Types */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">License Type</label>
+                  <label className="block text-sm font-medium mb-2">Job Types</label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {JOB_TYPE_OPTIONS.map((option) => (
+                      <div key={option.id} className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`job-${option.id}`} 
+                          checked={filters.jobTypes.includes(option.id)}
+                          onCheckedChange={() => handleCheckboxChange('jobTypes', option.id)}
+                        />
+                        <label 
+                          htmlFor={`job-${option.id}`}
+                          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {option.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Vehicle Types */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Vehicle Types</label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {VEHICLE_TYPE_OPTIONS.map((option) => (
+                      <div key={option.id} className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`vehicle-${option.id}`} 
+                          checked={filters.vehicleTypes.includes(option.id)}
+                          onCheckedChange={() => handleCheckboxChange('vehicleTypes', option.id)}
+                        />
+                        <label 
+                          htmlFor={`vehicle-${option.id}`}
+                          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {option.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Shift Preferences */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Shift Preferences</label>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                    {SHIFT_OPTIONS.map((option) => (
+                      <div key={option.id} className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`shift-${option.id}`} 
+                          checked={filters.shiftPreferences.includes(option.id)}
+                          onCheckedChange={() => handleCheckboxChange('shiftPreferences', option.id)}
+                        />
+                        <label 
+                          htmlFor={`shift-${option.id}`}
+                          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {option.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Employment Type */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Employment Type</label>
                   <Select 
-                    value={filters.license}
-                    onValueChange={(value) => setFilters({...filters, license: value})}
+                    value={filters.employmentType}
+                    onValueChange={(value) => setFilters({...filters, employmentType: value})}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Any license" />
+                      <SelectValue placeholder="Any employment type" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Any">Any</SelectItem>
-                      {LICENSE_OPTIONS.map((option) => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      {EMPLOYMENT_OPTIONS.map((option) => (
+                        <SelectItem key={option.id} value={option.id}>{option.label}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-                
+
+                {/* Distance Range */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">Availability</label>
-                  <Select 
-                    value={filters.availability}
-                    onValueChange={(value) => setFilters({...filters, availability: value})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Any availability" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {AVAILABILITY_OPTIONS.map((option) => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium">Max Distance (km)</label>
+                    <span className="text-sm font-medium">{filters.radius[0]}km</span>
+                  </div>
+                  <Slider
+                    defaultValue={filters.radius}
+                    max={200}
+                    step={10}
+                    onValueChange={(value) => setFilters({...filters, radius: value})}
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                    <span>0</span>
+                    <span>50</span>
+                    <span>100</span>
+                    <span>150</span>
+                    <span>200</span>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex justify-end mt-4">
-                <Button variant="outline" className="mr-2">Reset</Button>
+              <div className="flex justify-end mt-6">
+                <Button variant="outline" className="mr-2" onClick={resetFilters}>Reset</Button>
                 <Button onClick={handleSearch}>Apply Filters</Button>
               </div>
             </CardContent>
@@ -233,6 +484,7 @@ const DriverSearch = () => {
                 <TableHead>Experience</TableHead>
                 <TableHead>License Types</TableHead>
                 <TableHead>Availability</TableHead>
+                <TableHead>Job Types</TableHead>
                 <TableHead>Rating</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -266,6 +518,15 @@ const DriverSearch = () => {
                     </div>
                   </TableCell>
                   <TableCell>{driver.availability}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {driver.jobTypes.map((jobType, idx) => (
+                        <Badge key={idx} variant="outline" className="text-xs">
+                          {JOB_TYPE_OPTIONS.find(job => job.id === jobType)?.label || jobType}
+                        </Badge>
+                      ))}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center">
                       <Star className="h-3.5 w-3.5 text-yellow-500 mr-1 fill-yellow-500" />
