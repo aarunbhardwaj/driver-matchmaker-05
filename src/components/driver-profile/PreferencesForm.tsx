@@ -23,19 +23,27 @@ const preferencesFormSchema = z.object({
   // Geographical Preferences
   location: z.object({
     city: z.string().min(1, "City is required"),
-    state: z.string().min(1, "State is required"),
+    region: z.string().min(1, "Region/County is required"),
+    country: z.string().min(1, "Country is required"),
     radius: z.string().min(1, "Radius is required"),
   }),
   internationalTravel: z.boolean().optional(),
   
   // Work Schedule Preferences
   availability: z.string().min(1, "Select an availability option"),
+  shiftPreferences: z.array(z.string()),
+  overtimeInterest: z.boolean().optional(),
+  
+  // Employment Type
+  employmentType: z.string().min(1, "Select an employment type"),
   
   // Special Permits/Licenses
   permits: z.array(z.string()),
   
   // Additional Preferences
-  minimumHourlyRate: z.string().min(1, "Minimum hourly rate is required"),
+  compensationType: z.string().min(1, "Select compensation type"),
+  minimumRate: z.string().min(1, "Minimum rate is required"),
+  currency: z.string().min(1, "Currency is required"),
 });
 
 type PreferencesFormValues = z.infer<typeof preferencesFormSchema>;
@@ -60,6 +68,7 @@ const VEHICLE_TYPES = [
   { value: "minibus", label: "Mini-Bus" },
   { value: "truck", label: "Truck/Lorry" },
   { value: "motorbike", label: "Motorbike" },
+  { value: "bicycle", label: "Bicycle" },
 ];
 
 // Permit types that may be required
@@ -71,6 +80,28 @@ const PERMIT_TYPES = [
   { value: "passenger", label: "Passenger Transport Endorsement" },
   { value: "taxi", label: "Taxi/Rideshare Permit" },
   { value: "international", label: "International Driving Permit" },
+];
+
+// Shift preferences
+const SHIFT_TYPES = [
+  { value: "morning", label: "Morning Shifts" },
+  { value: "afternoon", label: "Afternoon Shifts" },
+  { value: "evening", label: "Evening Shifts" },
+  { value: "night", label: "Night Shifts" },
+  { value: "weekend", label: "Weekend Shifts" },
+];
+
+// Common European currencies
+const CURRENCIES = [
+  { value: "GBP", label: "British Pound (£)" },
+  { value: "EUR", label: "Euro (€)" },
+  { value: "PLN", label: "Polish Złoty (zł)" },
+  { value: "SEK", label: "Swedish Krona (kr)" },
+  { value: "NOK", label: "Norwegian Krone (kr)" },
+  { value: "DKK", label: "Danish Krone (kr)" },
+  { value: "CHF", label: "Swiss Franc (Fr)" },
+  { value: "CZK", label: "Czech Koruna (Kč)" },
+  { value: "HUF", label: "Hungarian Forint (Ft)" },
 ];
 
 interface PreferencesFormProps {
@@ -86,13 +117,19 @@ export function PreferencesForm({ onSubmit, isSubmitting, defaultValues }: Prefe
     vehicleTypes: [],
     location: {
       city: "",
-      state: "",
+      region: "",
+      country: "United Kingdom",
       radius: "25",
     },
     internationalTravel: false,
     availability: "",
+    shiftPreferences: [],
+    overtimeInterest: false,
+    employmentType: "",
     permits: [],
-    minimumHourlyRate: "",
+    compensationType: "hourly",
+    minimumRate: "",
+    currency: "GBP",
     ...defaultValues,
   };
 
@@ -199,7 +236,7 @@ export function PreferencesForm({ onSubmit, isSubmitting, defaultValues }: Prefe
         {/* Geographical Preferences */}
         <div>
           <h3 className="text-lg font-medium mb-4">Location Preferences</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FormField
               control={form.control}
               name="location.city"
@@ -215,13 +252,45 @@ export function PreferencesForm({ onSubmit, isSubmitting, defaultValues }: Prefe
             />
             <FormField
               control={form.control}
-              name="location.state"
+              name="location.region"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>State/Region</FormLabel>
+                  <FormLabel>Region/County</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter state or region" {...field} />
+                    <Input placeholder="Enter region or county" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="location.country"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Country</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select country" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                      <SelectItem value="France">France</SelectItem>
+                      <SelectItem value="Germany">Germany</SelectItem>
+                      <SelectItem value="Spain">Spain</SelectItem>
+                      <SelectItem value="Italy">Italy</SelectItem>
+                      <SelectItem value="Netherlands">Netherlands</SelectItem>
+                      <SelectItem value="Belgium">Belgium</SelectItem>
+                      <SelectItem value="Poland">Poland</SelectItem>
+                      <SelectItem value="Sweden">Sweden</SelectItem>
+                      <SelectItem value="Other">Other European Country</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -234,7 +303,7 @@ export function PreferencesForm({ onSubmit, isSubmitting, defaultValues }: Prefe
               name="location.radius"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Maximum distance willing to travel (miles)</FormLabel>
+                  <FormLabel>Maximum distance willing to travel (km)</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -245,11 +314,11 @@ export function PreferencesForm({ onSubmit, isSubmitting, defaultValues }: Prefe
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="10">10 miles</SelectItem>
-                      <SelectItem value="25">25 miles</SelectItem>
-                      <SelectItem value="50">50 miles</SelectItem>
-                      <SelectItem value="100">100 miles</SelectItem>
-                      <SelectItem value="200">200+ miles</SelectItem>
+                      <SelectItem value="10">10 km</SelectItem>
+                      <SelectItem value="25">25 km</SelectItem>
+                      <SelectItem value="50">50 km</SelectItem>
+                      <SelectItem value="100">100 km</SelectItem>
+                      <SelectItem value="200">200+ km</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -282,6 +351,53 @@ export function PreferencesForm({ onSubmit, isSubmitting, defaultValues }: Prefe
               )}
             />
           </div>
+        </div>
+
+        {/* Employment Type */}
+        <div>
+          <h3 className="text-lg font-medium mb-4">Employment Type</h3>
+          <FormField
+            control={form.control}
+            name="employmentType"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel>What type of employment are you looking for?</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-col space-y-1"
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="permanent" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Permanent Employment (Company Employee)
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="freelance" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Freelance/Self-Employed/Contractor
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="either" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Open to both options
+                      </FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         {/* Work Schedule Preferences */}
@@ -337,6 +453,77 @@ export function PreferencesForm({ onSubmit, isSubmitting, defaultValues }: Prefe
               </FormItem>
             )}
           />
+
+          {/* Shift Type Preferences */}
+          <div className="mt-6">
+            <FormField
+              control={form.control}
+              name="shiftPreferences"
+              render={() => (
+                <FormItem>
+                  <FormLabel>What shifts are you willing to work?</FormLabel>
+                  <FormDescription>Select all that apply</FormDescription>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+                    {SHIFT_TYPES.map((shiftType) => (
+                      <FormField
+                        key={shiftType.value}
+                        control={form.control}
+                        name="shiftPreferences"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={shiftType.value}
+                              className="flex flex-row items-start space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(shiftType.value)}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([...field.value, shiftType.value])
+                                      : field.onChange(
+                                          field.value?.filter((value) => value !== shiftType.value)
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal">{shiftType.label}</FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Overtime Preference */}
+          <div className="mt-4">
+            <FormField
+              control={form.control}
+              name="overtimeInterest"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>
+                      I am interested in overtime opportunities
+                    </FormLabel>
+                    <FormDescription>
+                      This indicates you're willing to work additional hours beyond your regular schedule when needed
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
 
         {/* Permits & Licenses */}
@@ -390,26 +577,82 @@ export function PreferencesForm({ onSubmit, isSubmitting, defaultValues }: Prefe
         {/* Compensation */}
         <div>
           <h3 className="text-lg font-medium mb-4">Compensation</h3>
+          
           <FormField
             control={form.control}
-            name="minimumHourlyRate"
+            name="compensationType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Minimum hourly rate (USD)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Enter minimum hourly rate"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  This helps us match you with jobs that meet your compensation requirements
-                </FormDescription>
+                <FormLabel>Preferred compensation structure</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select compensation type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="hourly">Hourly Rate</SelectItem>
+                    <SelectItem value="daily">Daily Rate</SelectItem>
+                    <SelectItem value="annual">Annual Salary</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
           />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <FormField
+              control={form.control}
+              name="minimumRate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Minimum expected rate</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter minimum rate"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    This helps us match you with jobs that meet your compensation requirements
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="currency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currency</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select currency" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {CURRENCIES.map(currency => (
+                        <SelectItem key={currency.value} value={currency.value}>
+                          {currency.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
 
         <div className="flex justify-end space-x-4 pt-4">
