@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Menu, X, Truck, User } from "lucide-react";
+import { Menu, X, Truck, User, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoginOptionsOpen, setIsLoginOptionsOpen] = useState(false);
   
   useEffect(() => {
     const handleScroll = () => {
@@ -42,9 +43,34 @@ export function Header() {
         </nav>
         
         <div className="hidden md:flex items-center space-x-4">
-          <Button variant="outline" className="hover-lift">
-            <Link to="/driver-dashboard">Log in</Link>
-          </Button>
+          <div className="relative">
+            <Button 
+              variant="outline" 
+              className="hover-lift"
+              onClick={() => setIsLoginOptionsOpen(!isLoginOptionsOpen)}
+            >
+              Log in
+            </Button>
+            
+            {isLoginOptionsOpen && (
+              <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 py-1 animate-fade-in">
+                <Link 
+                  to="/driver-dashboard" 
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={() => setIsLoginOptionsOpen(false)}
+                >
+                  <User className="mr-2 h-4 w-4" /> Driver Login
+                </Link>
+                <Link 
+                  to="/company-login" 
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={() => setIsLoginOptionsOpen(false)}
+                >
+                  <Briefcase className="mr-2 h-4 w-4" /> Company Login
+                </Link>
+              </div>
+            )}
+          </div>
           <Button className="hover-lift">
             <Link to="/driver-registration">Sign up</Link>
           </Button>
@@ -86,9 +112,20 @@ export function Header() {
           </nav>
           
           <div className="flex flex-col space-y-3">
-            <Button variant="outline" className="w-full justify-center" asChild>
-              <Link to="/driver-dashboard">Log in</Link>
-            </Button>
+            <Link 
+              to="/driver-dashboard" 
+              className="flex items-center py-2 px-3 rounded-md border border-gray-300 bg-background hover:bg-gray-50"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <User className="mr-2 h-4 w-4" /> Driver Login
+            </Link>
+            <Link 
+              to="/company-login" 
+              className="flex items-center py-2 px-3 rounded-md border border-gray-300 bg-background hover:bg-gray-50"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Briefcase className="mr-2 h-4 w-4" /> Company Login
+            </Link>
             <Button className="w-full justify-center" asChild>
               <Link to="/driver-registration">Sign up</Link>
             </Button>
