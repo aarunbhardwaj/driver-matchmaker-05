@@ -13,6 +13,7 @@ import DriverProfile from "./pages/DriverProfile";
 import CompanyDashboard from "./pages/CompanyDashboard";
 import CompanyLogin from "./pages/CompanyLogin";
 import DriverSearch from "./pages/DriverSearch";
+import JobCreation from "./pages/JobCreation";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/company-login" element={<CompanyLogin />} />
           <Route path="/company-dashboard" element={<CompanyDashboard />} />
           <Route path="/driver-search" element={<DriverSearch />} />
+          <Route path="/job-creation" element={<JobCreation />} />
           {/* Add more routes here later */}
           <Route path="*" element={<NotFound />} />
         </Routes>

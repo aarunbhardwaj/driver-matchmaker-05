@@ -17,8 +17,8 @@ export const CompanyHeader = () => {
               <Link to="/company-dashboard" className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-primary">
                 Dashboard
               </Link>
-              <Link to="/job-listings" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-primary">
-                Job Listings
+              <Link to="/job-creation" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-primary">
+                Post Jobs
               </Link>
               <Link to="/driver-search" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-primary">
                 Find Drivers
