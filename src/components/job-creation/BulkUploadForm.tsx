@@ -4,6 +4,7 @@ import { FileUp, Download, FileText, CheckCircle, AlertCircle } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
+import { downloadExcelTemplate } from "@/utils/excelTemplateGenerator";
 
 export function BulkUploadForm() {
   const { toast } = useToast();
@@ -63,8 +64,8 @@ export function BulkUploadForm() {
     }
   };
 
-  const downloadTemplate = () => {
-    // In a real application, this would download an Excel template file
+  const handleDownloadTemplate = () => {
+    downloadExcelTemplate();
     toast({
       title: "Template Downloaded",
       description: "Excel template has been downloaded.",
@@ -85,7 +86,7 @@ export function BulkUploadForm() {
         <Button 
           variant="outline" 
           className="mt-4" 
-          onClick={downloadTemplate}
+          onClick={handleDownloadTemplate}
         >
           <Download className="mr-2 h-4 w-4" /> Download Template
         </Button>

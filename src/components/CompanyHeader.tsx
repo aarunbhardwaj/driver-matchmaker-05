@@ -44,9 +44,9 @@ export const CompanyHeader = () => {
               <span className="absolute top-0 right-0.5 block h-2 w-2 rounded-full bg-red-500"></span>
             </button>
             
-            <button className="ml-4 p-1.5 rounded-full text-gray-500 hover:text-gray-700 border border-gray-200">
+            <Link to="/company-profile" className="ml-4 p-1.5 rounded-full text-gray-500 hover:text-gray-700 border border-gray-200">
               <User className="h-5 w-5" />
-            </button>
+            </Link>
             
             <button className="ml-4 md:hidden">
               <Menu className="h-6 w-6 text-gray-500" />
