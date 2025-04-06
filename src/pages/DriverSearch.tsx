@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/pagination";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Filter, MapPin, Truck, Star, Download, CheckCircle, Globe, Award, Sparkles, ShieldCheck } from "lucide-react";
+import { Search, Filter, MapPin, Truck, Download, CheckCircle, Globe, Award, Sparkles, ShieldCheck } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -41,8 +41,6 @@ const MOCK_DRIVERS = [
     experience: "5 years",
     licenseTypes: ["Class C", "Class CE"],
     availability: "Immediate",
-    rating: 4.8,
-    skills: ["Long-haul", "Refrigerated"],
     jobTypes: ["truck", "delivery"],
     vehicleTypes: ["truck"],
     shiftPreferences: ["morning", "afternoon"],
@@ -51,6 +49,7 @@ const MOCK_DRIVERS = [
     internationalRoutes: true,
     membershipTier: "pro",
     featured: true,
+    distance: 15,
   },
   {
     id: 2,
@@ -59,8 +58,6 @@ const MOCK_DRIVERS = [
     experience: "8 years",
     licenseTypes: ["Class C", "Class CE", "Class D"],
     availability: "2 weeks",
-    rating: 4.9,
-    skills: ["Hazardous Materials", "International"],
     jobTypes: ["truck"],
     vehicleTypes: ["truck"],
     shiftPreferences: ["night", "evening"],
@@ -69,6 +66,7 @@ const MOCK_DRIVERS = [
     internationalRoutes: true,
     membershipTier: "plus",
     featured: false,
+    distance: 35,
   },
   {
     id: 3,
@@ -77,8 +75,6 @@ const MOCK_DRIVERS = [
     experience: "3 years",
     licenseTypes: ["Class C"],
     availability: "Immediate",
-    rating: 4.5,
-    skills: ["Local delivery", "Van"],
     jobTypes: ["delivery", "courier"],
     vehicleTypes: ["van", "car"],
     shiftPreferences: ["morning", "afternoon"],
@@ -87,6 +83,7 @@ const MOCK_DRIVERS = [
     internationalRoutes: false,
     membershipTier: "free",
     featured: false,
+    distance: 28,
   },
   {
     id: 4,
@@ -95,8 +92,6 @@ const MOCK_DRIVERS = [
     experience: "10 years",
     licenseTypes: ["Class C", "Class CE", "Class D"],
     availability: "1 month",
-    rating: 5.0,
-    skills: ["Long-haul", "International", "Hazardous Materials"],
     jobTypes: ["truck"],
     vehicleTypes: ["truck"],
     shiftPreferences: ["evening", "night"],
@@ -105,6 +100,7 @@ const MOCK_DRIVERS = [
     internationalRoutes: true,
     membershipTier: "pro",
     featured: true,
+    distance: 42,
   },
   {
     id: 5,
@@ -113,8 +109,6 @@ const MOCK_DRIVERS = [
     experience: "4 years",
     licenseTypes: ["Class C", "Class B"],
     availability: "Immediate",
-    rating: 4.6,
-    skills: ["Urban delivery", "Light truck"],
     jobTypes: ["delivery", "rideshare", "courier"],
     vehicleTypes: ["van", "car"],
     shiftPreferences: ["weekend"],
@@ -123,6 +117,7 @@ const MOCK_DRIVERS = [
     internationalRoutes: false,
     membershipTier: "free",
     featured: false,
+    distance: 18,
   },
   {
     id: 6,
@@ -131,8 +126,6 @@ const MOCK_DRIVERS = [
     experience: "6 years",
     licenseTypes: ["Class C", "Class CE"],
     availability: "2 weeks",
-    rating: 4.7,
-    skills: ["Long-haul", "Temperature controlled"],
     jobTypes: ["truck", "delivery"],
     vehicleTypes: ["truck"],
     shiftPreferences: ["morning", "afternoon"],
@@ -141,6 +134,7 @@ const MOCK_DRIVERS = [
     internationalRoutes: true,
     membershipTier: "plus",
     featured: false,
+    distance: 65,
   },
 ];
 
@@ -366,6 +360,13 @@ const DriverSearch = () => {
       );
     }
     return null;
+  };
+
+  const getJobTypeLabels = (jobTypeIds) => {
+    return jobTypeIds.map(id => {
+      const option = JOB_TYPE_OPTIONS.find(opt => opt.id === id);
+      return option ? option.label : id;
+    });
   };
 
   return (
@@ -635,7 +636,7 @@ const DriverSearch = () => {
                 <TableHead>License Types</TableHead>
                 <TableHead>Availability</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Rating</TableHead>
+                <TableHead>Job Interests</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -663,20 +664,28 @@ const DriverSearch = () => {
                       )}
                       <span>{driver.name}</span>
                     </div>
-                    <div className="mt-1 flex gap-1.5 flex-wrap">
-                      {renderMembershipBadge(driver.membershipTier)}
-                      {renderVerifiedBadge(driver.isVerified)}
-                    </div>
+                    {driver.membershipTier === "pro" && (
+                      <div className="mt-1 flex gap-1.5">
+                        <Badge className="bg-purple-600 text-white hover:bg-purple-700 flex items-center gap-1">
+                          <Award className="h-3 w-3" />
+                          Driver Pro
+                        </Badge>
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center">
                       <MapPin className="h-3.5 w-3.5 mr-1 text-muted-foreground" /> 
                       {driver.location}
                     </div>
-                    {driver.internationalRoutes && (
+                    {driver.internationalRoutes ? (
                       <div className="flex items-center mt-1 text-xs text-blue-600">
                         <Globe className="h-3 w-3 mr-1" />
                         International routes
+                      </div>
+                    ) : (
+                      <div className="flex items-center mt-1 text-xs text-gray-500">
+                        <span>{driver.distance} km radius</span>
                       </div>
                     )}
                   </TableCell>
@@ -701,18 +710,26 @@ const DriverSearch = () => {
                   <TableCell>{driver.availability}</TableCell>
                   <TableCell>
                     {driver.isVerified ? (
-                      <div className="flex items-center text-green-600">
-                        <CheckCircle className="h-4 w-4 mr-1 fill-green-100" />
-                        <span className="text-sm font-medium">Verified</span>
+                      <div className="flex items-center">
+                        <Badge className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-1">
+                          <ShieldCheck className="h-3 w-3" />
+                          Verified
+                        </Badge>
                       </div>
                     ) : (
                       <span className="text-sm text-gray-500">Not verified</span>
                     )}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center">
-                      <Star className="h-3.5 w-3.5 text-yellow-500 mr-1 fill-yellow-500" />
-                      <span className="font-medium">{driver.rating}</span>
+                    <div className="flex flex-wrap gap-1">
+                      {getJobTypeLabels(driver.jobTypes).map((jobType, idx) => (
+                        <span 
+                          key={idx}
+                          className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full px-2 py-0.5"
+                        >
+                          {jobType}
+                        </span>
+                      ))}
                     </div>
                   </TableCell>
                   <TableCell>
