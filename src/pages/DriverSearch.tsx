@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { CompanyHeader } from "@/components/CompanyHeader";
 import { Input } from "@/components/ui/input";
@@ -29,12 +28,11 @@ import {
 } from "@/components/ui/pagination";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Filter, MapPin, Truck, Star, Download, CheckCircle, Globe, Award, Sparkles } from "lucide-react";
+import { Search, Filter, MapPin, Truck, Star, Download, CheckCircle, Globe, Award, Sparkles, ShieldCheck } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-// Mock data for drivers with updated properties for verification and membership
 const MOCK_DRIVERS = [
   {
     id: 1,
@@ -51,7 +49,7 @@ const MOCK_DRIVERS = [
     employmentType: "permanent",
     isVerified: true,
     internationalRoutes: true,
-    membershipTier: "pro", // Driver Pro
+    membershipTier: "pro",
     featured: true,
   },
   {
@@ -69,7 +67,7 @@ const MOCK_DRIVERS = [
     employmentType: "freelance",
     isVerified: true,
     internationalRoutes: true,
-    membershipTier: "plus", // Driver Plus
+    membershipTier: "plus",
     featured: false,
   },
   {
@@ -87,7 +85,7 @@ const MOCK_DRIVERS = [
     employmentType: "either",
     isVerified: false,
     internationalRoutes: false,
-    membershipTier: "free", // Free tier
+    membershipTier: "free",
     featured: false,
   },
   {
@@ -105,7 +103,7 @@ const MOCK_DRIVERS = [
     employmentType: "permanent",
     isVerified: true,
     internationalRoutes: true,
-    membershipTier: "pro", // Driver Pro
+    membershipTier: "pro",
     featured: true,
   },
   {
@@ -123,7 +121,7 @@ const MOCK_DRIVERS = [
     employmentType: "freelance",
     isVerified: false,
     internationalRoutes: false,
-    membershipTier: "free", // Free tier
+    membershipTier: "free",
     featured: false,
   },
   {
@@ -141,12 +139,11 @@ const MOCK_DRIVERS = [
     employmentType: "permanent",
     isVerified: true,
     internationalRoutes: true,
-    membershipTier: "plus", // Driver Plus
+    membershipTier: "plus",
     featured: false,
   },
 ];
 
-// Filter options
 const EXPERIENCE_OPTIONS = ["Any", "0-2 years", "3-5 years", "5+ years", "10+ years"];
 const LICENSE_OPTIONS = ["Class B", "Class C", "Class CE", "Class D"];
 const AVAILABILITY_OPTIONS = ["Any", "Immediate", "Within 2 weeks", "Within a month"];
@@ -215,7 +212,6 @@ const DriverSearch = () => {
   const [drivers, setDrivers] = useState(MOCK_DRIVERS);
 
   const handleSearch = () => {
-    // In a real application, this would call an API with the search query and filters
     let filteredDrivers = [...MOCK_DRIVERS];
     
     if (searchQuery) {
@@ -227,7 +223,6 @@ const DriverSearch = () => {
       );
     }
 
-    // Apply filters
     if (filters.experience !== "Any") {
       filteredDrivers = filteredDrivers.filter(driver => {
         const years = parseInt(driver.experience);
@@ -254,47 +249,40 @@ const DriverSearch = () => {
       });
     }
 
-    // Filter by job types
     if (filters.jobTypes.length > 0) {
       filteredDrivers = filteredDrivers.filter(driver => 
         filters.jobTypes.some(jobType => driver.jobTypes.includes(jobType))
       );
     }
 
-    // Filter by vehicle types
     if (filters.vehicleTypes.length > 0) {
       filteredDrivers = filteredDrivers.filter(driver => 
         filters.vehicleTypes.some(vehicleType => driver.vehicleTypes.includes(vehicleType))
       );
     }
 
-    // Filter by shift preferences
     if (filters.shiftPreferences.length > 0) {
       filteredDrivers = filteredDrivers.filter(driver => 
         filters.shiftPreferences.some(shift => driver.shiftPreferences.includes(shift))
       );
     }
 
-    // Filter by employment type
     if (filters.employmentType !== "Any") {
       filteredDrivers = filteredDrivers.filter(driver => 
         driver.employmentType === filters.employmentType || driver.employmentType === "either"
       );
     }
 
-    // Filter by verification status
     if (filters.verification === "verified") {
       filteredDrivers = filteredDrivers.filter(driver => driver.isVerified);
     }
 
-    // Filter by international routes availability
     if (filters.international === "yes") {
       filteredDrivers = filteredDrivers.filter(driver => driver.internationalRoutes);
     } else if (filters.international === "no") {
       filteredDrivers = filteredDrivers.filter(driver => !driver.internationalRoutes);
     }
 
-    // Filter by membership tier
     if (filters.membershipTier === "plus") {
       filteredDrivers = filteredDrivers.filter(driver => 
         driver.membershipTier === "plus" || driver.membershipTier === "pro"
@@ -303,14 +291,19 @@ const DriverSearch = () => {
       filteredDrivers = filteredDrivers.filter(driver => driver.membershipTier === "pro");
     }
 
-    // Sort to show featured profiles first
     filteredDrivers.sort((a, b) => {
-      if (a.featured && !b.featured) return -1;
-      if (!a.featured && b.featured) return 1;
+      if (a.membershipTier === "pro" && b.membershipTier !== "pro") return -1;
+      if (a.membershipTier !== "pro" && b.membershipTier === "pro") return 1;
       
-      // Secondary sort by tier
-      const tierOrder = { pro: 0, plus: 1, free: 2 };
-      return tierOrder[a.membershipTier] - tierOrder[b.membershipTier];
+      if (a.membershipTier === b.membershipTier) {
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+      }
+      
+      if (a.isVerified && !b.isVerified) return -1;
+      if (!a.isVerified && b.isVerified) return 1;
+      
+      return 0;
     });
 
     setDrivers(filteredDrivers);
@@ -350,31 +343,29 @@ const DriverSearch = () => {
       membershipTier: "any",
     });
   };
-  
-  // Renders a badge for membership tier
+
   const renderMembershipBadge = (tier) => {
-    switch(tier) {
-      case 'pro':
-        return (
-          <Badge className="bg-purple-600 text-white hover:bg-purple-700 flex items-center gap-1">
-            <Award className="h-3 w-3" />
-            Driver Pro
-          </Badge>
-        );
-      case 'plus':
-        return (
-          <Badge className="bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-1">
-            <CheckCircle className="h-3 w-3" />
-            Driver Plus
-          </Badge>
-        );
-      default:
-        return (
-          <Badge variant="outline" className="text-gray-600 flex items-center gap-1">
-            Free Tier
-          </Badge>
-        );
+    if (tier === 'pro') {
+      return (
+        <Badge className="bg-purple-600 text-white hover:bg-purple-700 flex items-center gap-1">
+          <Award className="h-3 w-3" />
+          Driver Pro
+        </Badge>
+      );
     }
+    return null;
+  };
+
+  const renderVerifiedBadge = (isVerified) => {
+    if (isVerified) {
+      return (
+        <Badge className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-1">
+          <ShieldCheck className="h-3 w-3" />
+          Verified
+        </Badge>
+      );
+    }
+    return null;
   };
 
   return (
@@ -384,7 +375,6 @@ const DriverSearch = () => {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Find Drivers</h1>
         
-        {/* Search bar */}
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="relative flex-grow">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -410,12 +400,10 @@ const DriverSearch = () => {
           </Button>
         </div>
         
-        {/* Filters */}
         {showFilters && (
           <Card className="mb-6 animate-in fade-in-50 duration-300">
             <CardContent className="pt-6">
               <div className="grid grid-cols-1 gap-6">
-                {/* Enhanced filters section */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Experience</label>
@@ -470,7 +458,6 @@ const DriverSearch = () => {
                   </div>
                 </div>
                 
-                {/* New filters for verification, international routes, and membership tier */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Verification Status</label>
@@ -524,7 +511,6 @@ const DriverSearch = () => {
                   </div>
                 </div>
                 
-                {/* Job Types */}
                 <div>
                   <label className="block text-sm font-medium mb-2">Job Types</label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -546,7 +532,6 @@ const DriverSearch = () => {
                   </div>
                 </div>
 
-                {/* Vehicle Types */}
                 <div>
                   <label className="block text-sm font-medium mb-2">Vehicle Types</label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -568,7 +553,6 @@ const DriverSearch = () => {
                   </div>
                 </div>
 
-                {/* Shift Preferences */}
                 <div>
                   <label className="block text-sm font-medium mb-2">Shift Preferences</label>
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
@@ -590,7 +574,6 @@ const DriverSearch = () => {
                   </div>
                 </div>
 
-                {/* Employment Type */}
                 <div>
                   <label className="block text-sm font-medium mb-2">Employment Type</label>
                   <Select 
@@ -609,7 +592,6 @@ const DriverSearch = () => {
                   </Select>
                 </div>
 
-                {/* Distance Range */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <label className="block text-sm font-medium">Max Distance (km)</label>
@@ -639,12 +621,10 @@ const DriverSearch = () => {
           </Card>
         )}
         
-        {/* Results count */}
         <p className="text-sm text-muted-foreground mb-4">
           Showing {drivers.length} drivers
         </p>
         
-        {/* Results table */}
         <div className="rounded-md border mb-4 overflow-hidden">
           <Table>
             <TableHeader>
@@ -663,15 +643,15 @@ const DriverSearch = () => {
               {drivers.map((driver) => (
                 <TableRow 
                   key={driver.id}
-                  className={driver.featured ? "bg-purple-50 dark:bg-purple-900/10" : ""}
+                  className={driver.membershipTier === "pro" ? "bg-purple-50 dark:bg-purple-900/10" : ""}
                 >
                   <TableCell className="font-medium">
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-1.5">
                       {driver.featured && (
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div className="mr-1.5">
+                              <div>
                                 <Sparkles className="h-4 w-4 text-yellow-500" />
                               </div>
                             </TooltipTrigger>
@@ -681,10 +661,11 @@ const DriverSearch = () => {
                           </Tooltip>
                         </TooltipProvider>
                       )}
-                      {driver.name}
+                      <span>{driver.name}</span>
                     </div>
-                    <div className="mt-1">
+                    <div className="mt-1 flex gap-1.5 flex-wrap">
                       {renderMembershipBadge(driver.membershipTier)}
+                      {renderVerifiedBadge(driver.isVerified)}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -746,7 +727,6 @@ const DriverSearch = () => {
           </Table>
         </div>
         
-        {/* Pagination */}
         <Pagination>
           <PaginationContent>
             <PaginationItem>
