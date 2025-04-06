@@ -29,11 +29,12 @@ import {
 } from "@/components/ui/pagination";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Filter, MapPin, Truck, Star, Download } from "lucide-react";
+import { Search, Filter, MapPin, Truck, Star, Download, CheckCircle, Globe, Award, Sparkles } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-// Mock data for drivers
+// Mock data for drivers with updated properties for verification and membership
 const MOCK_DRIVERS = [
   {
     id: 1,
@@ -48,6 +49,10 @@ const MOCK_DRIVERS = [
     vehicleTypes: ["truck"],
     shiftPreferences: ["morning", "afternoon"],
     employmentType: "permanent",
+    isVerified: true,
+    internationalRoutes: true,
+    membershipTier: "pro", // Driver Pro
+    featured: true,
   },
   {
     id: 2,
@@ -62,6 +67,10 @@ const MOCK_DRIVERS = [
     vehicleTypes: ["truck"],
     shiftPreferences: ["night", "evening"],
     employmentType: "freelance",
+    isVerified: true,
+    internationalRoutes: true,
+    membershipTier: "plus", // Driver Plus
+    featured: false,
   },
   {
     id: 3,
@@ -76,6 +85,10 @@ const MOCK_DRIVERS = [
     vehicleTypes: ["van", "car"],
     shiftPreferences: ["morning", "afternoon"],
     employmentType: "either",
+    isVerified: false,
+    internationalRoutes: false,
+    membershipTier: "free", // Free tier
+    featured: false,
   },
   {
     id: 4,
@@ -90,6 +103,10 @@ const MOCK_DRIVERS = [
     vehicleTypes: ["truck"],
     shiftPreferences: ["evening", "night"],
     employmentType: "permanent",
+    isVerified: true,
+    internationalRoutes: true,
+    membershipTier: "pro", // Driver Pro
+    featured: true,
   },
   {
     id: 5,
@@ -104,6 +121,28 @@ const MOCK_DRIVERS = [
     vehicleTypes: ["van", "car"],
     shiftPreferences: ["weekend"],
     employmentType: "freelance",
+    isVerified: false,
+    internationalRoutes: false,
+    membershipTier: "free", // Free tier
+    featured: false,
+  },
+  {
+    id: 6,
+    name: "Emma Wilson",
+    location: "Dresden, DE",
+    experience: "6 years",
+    licenseTypes: ["Class C", "Class CE"],
+    availability: "2 weeks",
+    rating: 4.7,
+    skills: ["Long-haul", "Temperature controlled"],
+    jobTypes: ["truck", "delivery"],
+    vehicleTypes: ["truck"],
+    shiftPreferences: ["morning", "afternoon"],
+    employmentType: "permanent",
+    isVerified: true,
+    internationalRoutes: true,
+    membershipTier: "plus", // Driver Plus
+    featured: false,
   },
 ];
 
@@ -142,6 +181,20 @@ const EMPLOYMENT_OPTIONS = [
   { id: "freelance", label: "Freelance" },
   { id: "either", label: "Either" },
 ];
+const VERIFICATION_OPTIONS = [
+  { id: "any", label: "Any" },
+  { id: "verified", label: "Verified Only" },
+];
+const MEMBERSHIP_OPTIONS = [
+  { id: "any", label: "Any" },
+  { id: "plus", label: "Driver Plus & Pro" },
+  { id: "pro", label: "Driver Pro Only" },
+];
+const INTERNATIONAL_OPTIONS = [
+  { id: "any", label: "Any" },
+  { id: "yes", label: "International Routes" },
+  { id: "no", label: "Local Routes Only" },
+];
 
 const DriverSearch = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -154,6 +207,9 @@ const DriverSearch = () => {
     vehicleTypes: [],
     shiftPreferences: [],
     employmentType: "Any",
+    verification: "any",
+    international: "any",
+    membershipTier: "any",
   });
   const [showFilters, setShowFilters] = useState(false);
   const [drivers, setDrivers] = useState(MOCK_DRIVERS);
@@ -226,6 +282,37 @@ const DriverSearch = () => {
       );
     }
 
+    // Filter by verification status
+    if (filters.verification === "verified") {
+      filteredDrivers = filteredDrivers.filter(driver => driver.isVerified);
+    }
+
+    // Filter by international routes availability
+    if (filters.international === "yes") {
+      filteredDrivers = filteredDrivers.filter(driver => driver.internationalRoutes);
+    } else if (filters.international === "no") {
+      filteredDrivers = filteredDrivers.filter(driver => !driver.internationalRoutes);
+    }
+
+    // Filter by membership tier
+    if (filters.membershipTier === "plus") {
+      filteredDrivers = filteredDrivers.filter(driver => 
+        driver.membershipTier === "plus" || driver.membershipTier === "pro"
+      );
+    } else if (filters.membershipTier === "pro") {
+      filteredDrivers = filteredDrivers.filter(driver => driver.membershipTier === "pro");
+    }
+
+    // Sort to show featured profiles first
+    filteredDrivers.sort((a, b) => {
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+      
+      // Secondary sort by tier
+      const tierOrder = { pro: 0, plus: 1, free: 2 };
+      return tierOrder[a.membershipTier] - tierOrder[b.membershipTier];
+    });
+
     setDrivers(filteredDrivers);
   };
 
@@ -258,7 +345,36 @@ const DriverSearch = () => {
       vehicleTypes: [],
       shiftPreferences: [],
       employmentType: "Any",
+      verification: "any",
+      international: "any",
+      membershipTier: "any",
     });
+  };
+  
+  // Renders a badge for membership tier
+  const renderMembershipBadge = (tier) => {
+    switch(tier) {
+      case 'pro':
+        return (
+          <Badge className="bg-purple-600 text-white hover:bg-purple-700 flex items-center gap-1">
+            <Award className="h-3 w-3" />
+            Driver Pro
+          </Badge>
+        );
+      case 'plus':
+        return (
+          <Badge className="bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-1">
+            <CheckCircle className="h-3 w-3" />
+            Driver Plus
+          </Badge>
+        );
+      default:
+        return (
+          <Badge variant="outline" className="text-gray-600 flex items-center gap-1">
+            Free Tier
+          </Badge>
+        );
+    }
   };
 
   return (
@@ -299,7 +415,7 @@ const DriverSearch = () => {
           <Card className="mb-6 animate-in fade-in-50 duration-300">
             <CardContent className="pt-6">
               <div className="grid grid-cols-1 gap-6">
-                {/* Basic filters section */}
+                {/* Enhanced filters section */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Experience</label>
@@ -348,6 +464,60 @@ const DriverSearch = () => {
                       <SelectContent>
                         {AVAILABILITY_OPTIONS.map((option) => (
                           <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                {/* New filters for verification, international routes, and membership tier */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Verification Status</label>
+                    <Select 
+                      value={filters.verification}
+                      onValueChange={(value) => setFilters({...filters, verification: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Any verification status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {VERIFICATION_OPTIONS.map((option) => (
+                          <SelectItem key={option.id} value={option.id}>{option.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">International Routes</label>
+                    <Select 
+                      value={filters.international}
+                      onValueChange={(value) => setFilters({...filters, international: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Any route preference" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {INTERNATIONAL_OPTIONS.map((option) => (
+                          <SelectItem key={option.id} value={option.id}>{option.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Membership Tier</label>
+                    <Select 
+                      value={filters.membershipTier}
+                      onValueChange={(value) => setFilters({...filters, membershipTier: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Any membership tier" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {MEMBERSHIP_OPTIONS.map((option) => (
+                          <SelectItem key={option.id} value={option.id}>{option.label}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -484,20 +654,50 @@ const DriverSearch = () => {
                 <TableHead>Experience</TableHead>
                 <TableHead>License Types</TableHead>
                 <TableHead>Availability</TableHead>
-                <TableHead>Job Types</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Rating</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {drivers.map((driver) => (
-                <TableRow key={driver.id}>
-                  <TableCell className="font-medium">{driver.name}</TableCell>
+                <TableRow 
+                  key={driver.id}
+                  className={driver.featured ? "bg-purple-50 dark:bg-purple-900/10" : ""}
+                >
+                  <TableCell className="font-medium">
+                    <div className="flex items-center">
+                      {driver.featured && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="mr-1.5">
+                                <Sparkles className="h-4 w-4 text-yellow-500" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Featured Profile</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                      {driver.name}
+                    </div>
+                    <div className="mt-1">
+                      {renderMembershipBadge(driver.membershipTier)}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center">
                       <MapPin className="h-3.5 w-3.5 mr-1 text-muted-foreground" /> 
                       {driver.location}
                     </div>
+                    {driver.internationalRoutes && (
+                      <div className="flex items-center mt-1 text-xs text-blue-600">
+                        <Globe className="h-3 w-3 mr-1" />
+                        International routes
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center">
@@ -519,13 +719,14 @@ const DriverSearch = () => {
                   </TableCell>
                   <TableCell>{driver.availability}</TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {driver.jobTypes.map((jobType, idx) => (
-                        <Badge key={idx} variant="outline" className="text-xs">
-                          {JOB_TYPE_OPTIONS.find(job => job.id === jobType)?.label || jobType}
-                        </Badge>
-                      ))}
-                    </div>
+                    {driver.isVerified ? (
+                      <div className="flex items-center text-green-600">
+                        <CheckCircle className="h-4 w-4 mr-1 fill-green-100" />
+                        <span className="text-sm font-medium">Verified</span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-500">Not verified</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center">
