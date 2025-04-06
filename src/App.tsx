@@ -10,6 +10,8 @@ import DriverRegistration from "./pages/DriverRegistration";
 import CompanyRegistration from "./pages/CompanyRegistration";
 import DriverDashboard from "./pages/DriverDashboard";
 import DriverProfile from "./pages/DriverProfile";
+import DriverMembership from "./pages/DriverMembership";
+import DriverBilling from "./pages/DriverBilling";
 import CompanyDashboard from "./pages/CompanyDashboard";
 import CompanyLogin from "./pages/CompanyLogin";
 import CompanyProfile from "./pages/CompanyProfile";
@@ -31,6 +33,8 @@ const App = () => (
           <Route path="/company-registration" element={<CompanyRegistration />} />
           <Route path="/driver-dashboard" element={<DriverDashboard />} />
           <Route path="/driver-profile" element={<DriverProfile />} />
+          <Route path="/driver-membership" element={<DriverMembership />} />
+          <Route path="/driver-billing" element={<DriverBilling />} />
           <Route path="/company-login" element={<CompanyLogin />} />
           <Route path="/company-dashboard" element={<CompanyDashboard />} />
           <Route path="/company-profile" element={<CompanyProfile />} />

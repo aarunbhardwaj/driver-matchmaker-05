@@ -31,7 +31,9 @@ import {
   Edit,
   Check,
   X,
-  Briefcase
+  Briefcase,
+  Star,
+  CreditCard
 } from "lucide-react";
 
 import { DriverHeader } from "@/components/DriverHeader";
@@ -77,6 +79,7 @@ const DriverProfile = () => {
     licenseNumber: "IL1234567",
     licenseExpiration: "2025-06-30",
     experience: "5 years",
+    membershipTier: "free", // Added membership tier
     bio: "Professional truck driver with experience in long-haul transportation. Specialized in refrigerated freight and hazardous materials. Safe driving record with no accidents.",
     certifications: [
       { name: "Hazardous Materials Endorsement", expiry: "2025-06-30" },
@@ -164,6 +167,14 @@ const DriverProfile = () => {
             <Button onClick={() => navigate('/driver-dashboard')} variant="outline">
               Back to Dashboard
             </Button>
+            <Button onClick={() => navigate('/driver-membership')} variant="outline">
+              <Star className="mr-2 h-4 w-4" /> Membership
+              {driverData.membershipTier === "free" && (
+                <Badge className="ml-1.5 bg-primary/20 text-primary text-xs">
+                  Upgrade
+                </Badge>
+              )}
+            </Button>
             {!isEditing && (
               <Button onClick={() => setIsEditing(true)}>
                 <Edit className="mr-2 h-4 w-4" /> Edit Profile
@@ -179,8 +190,24 @@ const DriverProfile = () => {
               <div className="w-32 h-32 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center">
                 <User className="h-16 w-16 text-primary" />
               </div>
-              <CardTitle>{driverData.firstName} {driverData.lastName}</CardTitle>
-              <CardDescription>{driverData.licenseType} Driver</CardDescription>
+              <CardTitle>
+                {driverData.firstName} {driverData.lastName}
+                {driverData.membershipTier !== "free" && (
+                  <div className="mt-2">
+                    <Badge className="bg-primary">
+                      {driverData.membershipTier === "plus" ? "Driver Plus" : "Driver Pro"}
+                    </Badge>
+                  </div>
+                )}
+              </CardTitle>
+              <CardDescription>
+                {driverData.licenseType} Driver
+                {driverData.membershipTier !== "free" && (
+                  <Badge variant="outline" className="ml-2 bg-green-50 text-green-600 border-green-300">
+                    Verified
+                  </Badge>
+                )}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -222,6 +249,20 @@ const DriverProfile = () => {
                     <p className="text-lg font-semibold">{driverData.metrics.safetyScore}</p>
                   </div>
                 </div>
+              </div>
+              
+              {driverData.membershipTier === "free" && (
+                <div className="mt-6">
+                  <Button className="w-full" onClick={() => navigate('/driver-membership')}>
+                    <Star className="mr-2 h-4 w-4" /> Upgrade Membership
+                  </Button>
+                </div>
+              )}
+              
+              <div className="mt-4">
+                <Button variant="outline" className="w-full" onClick={() => navigate('/driver-billing')}>
+                  <CreditCard className="mr-2 h-4 w-4" /> Billing Settings
+                </Button>
               </div>
             </CardContent>
           </Card>

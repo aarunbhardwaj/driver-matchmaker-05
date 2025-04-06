@@ -30,6 +30,9 @@ export const CompanyHeader = () => {
                 <CreditCard className="h-4 w-4 inline mr-1" />
                 Billing
               </Link>
+              <Link to="/company-profile?tab=team" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-primary">
+                Team
+              </Link>
             </nav>
           </div>
           
