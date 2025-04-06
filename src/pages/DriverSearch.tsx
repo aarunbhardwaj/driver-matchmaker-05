@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CompanyHeader } from "@/components/CompanyHeader";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Search, Filter, MapPin, Truck, Download, CheckCircle, Globe, Award, Sparkles, ShieldCheck } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
@@ -204,6 +204,12 @@ const DriverSearch = () => {
   });
   const [showFilters, setShowFilters] = useState(false);
   const [drivers, setDrivers] = useState(MOCK_DRIVERS);
+  const [featuredDrivers, setFeaturedDrivers] = useState([]);
+
+  useEffect(() => {
+    const initialFeatured = MOCK_DRIVERS.filter(driver => driver.membershipTier === "pro");
+    setFeaturedDrivers(initialFeatured);
+  }, []);
 
   const handleSearch = () => {
     let filteredDrivers = [...MOCK_DRIVERS];
@@ -212,8 +218,7 @@ const DriverSearch = () => {
       filteredDrivers = filteredDrivers.filter(
         driver => 
           driver.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          driver.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          driver.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
+          driver.location.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -301,6 +306,9 @@ const DriverSearch = () => {
     });
 
     setDrivers(filteredDrivers);
+    
+    const newFeaturedDrivers = filteredDrivers.filter(driver => driver.membershipTier === "pro");
+    setFeaturedDrivers(newFeaturedDrivers);
   };
 
   const toggleFilters = () => {
@@ -368,6 +376,106 @@ const DriverSearch = () => {
       return option ? option.label : id;
     });
   };
+
+  const renderDriverRow = (driver) => (
+    <TableRow 
+      key={driver.id}
+      className={driver.membershipTier === "pro" ? "bg-purple-50 dark:bg-purple-900/10" : ""}
+    >
+      <TableCell className="font-medium">
+        <div className="flex items-center gap-1.5">
+          {driver.featured && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Sparkles className="h-4 w-4 text-yellow-500" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Featured Profile</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+          <span>{driver.name}</span>
+        </div>
+        {driver.membershipTier === "pro" && (
+          <div className="mt-1 flex gap-1.5">
+            <Badge className="bg-purple-600 text-white hover:bg-purple-700 flex items-center gap-1">
+              <Award className="h-3 w-3" />
+              Driver Pro
+            </Badge>
+          </div>
+        )}
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center">
+          <MapPin className="h-3.5 w-3.5 mr-1 text-muted-foreground" /> 
+          {driver.location}
+        </div>
+        {driver.internationalRoutes ? (
+          <div className="flex items-center mt-1 text-xs text-blue-600">
+            <Globe className="h-3 w-3 mr-1" />
+            International routes
+          </div>
+        ) : (
+          <div className="flex items-center mt-1 text-xs text-gray-500">
+            <span>{driver.distance} km radius</span>
+          </div>
+        )}
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center">
+          <Truck className="h-3.5 w-3.5 mr-1 text-muted-foreground" /> 
+          {driver.experience}
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="flex flex-wrap gap-1">
+          {driver.licenseTypes.map((license, idx) => (
+            <span 
+              key={idx}
+              className="text-xs bg-secondary/10 text-secondary rounded-full px-2 py-0.5"
+            >
+              {license}
+            </span>
+          ))}
+        </div>
+      </TableCell>
+      <TableCell>{driver.availability}</TableCell>
+      <TableCell>
+        {driver.isVerified ? (
+          <div className="flex items-center">
+            <Badge className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-1">
+              <ShieldCheck className="h-3 w-3" />
+              Verified
+            </Badge>
+          </div>
+        ) : (
+          <span className="text-sm text-gray-500">Not verified</span>
+        )}
+      </TableCell>
+      <TableCell>
+        <div className="flex flex-wrap gap-1">
+          {getJobTypeLabels(driver.jobTypes).map((jobType, idx) => (
+            <span 
+              key={idx}
+              className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full px-2 py-0.5"
+            >
+              {jobType}
+            </span>
+          ))}
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">View Profile</Button>
+          <Button size="sm">Contact</Button>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -622,6 +730,41 @@ const DriverSearch = () => {
           </Card>
         )}
         
+        {featuredDrivers.length > 0 && (
+          <Card className="mb-6 border-purple-200 bg-purple-50 dark:bg-purple-900/10 dark:border-purple-900/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Award className="h-5 w-5 text-purple-600" />
+                Featured Drivers
+                <Badge variant="outline" className="ml-2 bg-purple-100 text-purple-800 border-purple-200">
+                  Driver Pro
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border border-purple-200 overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-purple-100/50 dark:bg-purple-900/30">
+                      <TableHead>Driver</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Experience</TableHead>
+                      <TableHead>License Types</TableHead>
+                      <TableHead>Availability</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Job Interests</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {featuredDrivers.map(driver => renderDriverRow(driver))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        
         <p className="text-sm text-muted-foreground mb-4">
           Showing {drivers.length} drivers
         </p>
@@ -641,105 +784,7 @@ const DriverSearch = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {drivers.map((driver) => (
-                <TableRow 
-                  key={driver.id}
-                  className={driver.membershipTier === "pro" ? "bg-purple-50 dark:bg-purple-900/10" : ""}
-                >
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-1.5">
-                      {driver.featured && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div>
-                                <Sparkles className="h-4 w-4 text-yellow-500" />
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Featured Profile</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                      <span>{driver.name}</span>
-                    </div>
-                    {driver.membershipTier === "pro" && (
-                      <div className="mt-1 flex gap-1.5">
-                        <Badge className="bg-purple-600 text-white hover:bg-purple-700 flex items-center gap-1">
-                          <Award className="h-3 w-3" />
-                          Driver Pro
-                        </Badge>
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <MapPin className="h-3.5 w-3.5 mr-1 text-muted-foreground" /> 
-                      {driver.location}
-                    </div>
-                    {driver.internationalRoutes ? (
-                      <div className="flex items-center mt-1 text-xs text-blue-600">
-                        <Globe className="h-3 w-3 mr-1" />
-                        International routes
-                      </div>
-                    ) : (
-                      <div className="flex items-center mt-1 text-xs text-gray-500">
-                        <span>{driver.distance} km radius</span>
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Truck className="h-3.5 w-3.5 mr-1 text-muted-foreground" /> 
-                      {driver.experience}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {driver.licenseTypes.map((license, idx) => (
-                        <span 
-                          key={idx}
-                          className="text-xs bg-secondary/10 text-secondary rounded-full px-2 py-0.5"
-                        >
-                          {license}
-                        </span>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell>{driver.availability}</TableCell>
-                  <TableCell>
-                    {driver.isVerified ? (
-                      <div className="flex items-center">
-                        <Badge className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-1">
-                          <ShieldCheck className="h-3 w-3" />
-                          Verified
-                        </Badge>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-gray-500">Not verified</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {getJobTypeLabels(driver.jobTypes).map((jobType, idx) => (
-                        <span 
-                          key={idx}
-                          className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full px-2 py-0.5"
-                        >
-                          {jobType}
-                        </span>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">View Profile</Button>
-                      <Button size="sm">Contact</Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {drivers.filter(driver => driver.membershipTier !== "pro").map(driver => renderDriverRow(driver))}
             </TableBody>
           </Table>
         </div>
