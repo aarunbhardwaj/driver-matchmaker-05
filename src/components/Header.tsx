@@ -127,7 +127,7 @@ export function Header() {
               <Briefcase className="mr-2 h-4 w-4" /> Company Login
             </Link>
             <Button className="w-full justify-center rounded-xl" asChild>
-              <Link to="/driver-registration">Sign up</Link>
+              <Link to="/driver-registration" onClick={() => setIsMobileMenuOpen(false)}>Sign up</Link>
             </Button>
           </div>
         </div>
