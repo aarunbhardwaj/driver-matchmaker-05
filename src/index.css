@@ -1,69 +1,71 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    --background: 260 25% 98%;
+    --foreground: 260 30% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 260 30% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 260 30% 10%;
 
-    --primary: 210 100% 50%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 255 70% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 25% 27%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 250 20% 30%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 93%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 260 15% 94%;
+    --muted-foreground: 260 10% 45%;
 
-    --accent: 216 100% 97%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 245 70% 95%;
+    --accent-foreground: 260 30% 10%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 215 25% 27%;
+    --border: 260 15% 90%;
+    --input: 260 15% 90%;
+    --ring: 255 70% 60%;
 
-    --radius: 0.75rem;
+    --radius: 1.2rem;
   }
 
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    --background: 260 25% 8%;
+    --foreground: 260 10% 95%;
 
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
+    --card: 260 25% 12%;
+    --card-foreground: 260 10% 95%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 260 25% 12%;
+    --popover-foreground: 260 10% 95%;
 
-    --primary: 210 100% 50%;
-    --primary-foreground: 222 47% 11%;
+    --primary: 255 70% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 25% 27%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 250 20% 30%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 217 33% 18%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 260 20% 18%;
+    --muted-foreground: 260 10% 65%;
 
-    --accent: 216 34% 17%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 245 30% 20%;
+    --accent-foreground: 260 10% 95%;
 
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217 33% 18%;
-    --input: 217 33% 18%;
-    --ring: 212 27% 84%;
+    --border: 260 20% 18%;
+    --input: 260 20% 18%;
+    --ring: 255 70% 60%;
   }
 }
 
@@ -84,11 +86,23 @@
 
 @layer utilities {
   .glass {
-    @apply backdrop-blur-md bg-white/70 dark:bg-black/40 border border-white/20 dark:border-white/10 shadow-lg;
+    @apply backdrop-blur-md bg-white/80 dark:bg-black/30 border border-white/30 dark:border-white/10 shadow-lg;
   }
   
   .glass-hover {
-    @apply transition-all duration-300 hover:backdrop-blur-lg hover:bg-white/80 dark:hover:bg-black/50 hover:shadow-xl;
+    @apply transition-all duration-300 hover:backdrop-blur-lg hover:bg-white/90 dark:hover:bg-black/40 hover:shadow-xl;
+  }
+  
+  .saatosa-card {
+    @apply rounded-2xl bg-white border border-border/50 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+  
+  .saatosa-input {
+    @apply rounded-xl border-input bg-background px-4 py-3 text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-all duration-200;
+  }
+  
+  .saatosa-button {
+    @apply rounded-xl px-5 py-3 font-medium transition-all duration-200 shadow-sm;
   }
   
   .text-balance {
@@ -113,6 +127,18 @@
   }
   
   .subtle-shadow {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+  }
+  
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-violet-500;
+  }
+  
+  .gradient-bg {
+    @apply bg-gradient-to-tr from-violet-50 to-sky-50 dark:from-violet-950/30 dark:to-sky-950/30;
+  }
+  
+  .saatosa-blob {
+    @apply absolute rounded-full blur-3xl opacity-20;
   }
 }

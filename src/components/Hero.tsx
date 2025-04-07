@@ -45,54 +45,55 @@ export function Hero() {
   ];
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center pt-16 px-6">
-      {/* Background shapes */}
-      <div className="absolute inset-0 overflow-hidden -z-10">
-        <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-3xl"></div>
-        <div className="absolute -bottom-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-3xl"></div>
+    <section className="relative pt-32 pb-20 px-6 overflow-hidden">
+      {/* Background blobs */}
+      <div className="absolute inset-0 -z-10 gradient-bg">
+        <div className="saatosa-blob h-72 w-72 bg-purple-400/30 -top-20 -left-20 animate-float"></div>
+        <div className="saatosa-blob h-96 w-96 bg-blue-400/20 top-40 right-0 animate-float animation-delay-1000"></div>
+        <div className="saatosa-blob h-64 w-64 bg-pink-400/20 bottom-20 left-20 animate-float animation-delay-2000"></div>
       </div>
       
       <div className="max-w-5xl mx-auto text-center space-y-8 animate-fade-in">
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-          The Smarter Way to Connect <span className="text-primary">Drivers</span> with <span className="text-primary">Logistics Companies</span>
+        <h1 className="text-4xl md:text-6xl font-display font-bold tracking-tight">
+          The Smarter Way to Connect <span className="gradient-text">Drivers</span> with <span className="gradient-text">Logistics Companies</span>
         </h1>
         
-        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-light">
           DriverMatch uses intelligent matching to pair qualified drivers with the right logistics companies, 
           streamlining the hiring process for everyone involved.
         </p>
         
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button size="lg" className="group gap-2 hover-lift text-lg px-8 py-6" asChild>
+        <div className="pt-10 flex flex-col sm:flex-row items-center justify-center gap-5">
+          <Button size="lg" className="group gap-2 rounded-full hover-lift text-lg px-8 py-6 shadow-md" asChild>
             <Link to="/driver-registration">
               <User className="h-5 w-5" />
               <span>I'm a Driver</span>
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 ml-1" />
             </Link>
           </Button>
           
-          <Button size="lg" variant="outline" className="group gap-2 hover-lift text-lg px-8 py-6" asChild>
+          <Button size="lg" variant="outline" className="group gap-2 bg-white hover-lift text-lg px-8 py-6 rounded-full shadow-sm" asChild>
             <Link to="/company-registration">
               <Truck className="h-5 w-5" />
               <span>I'm a Company</span>
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 ml-1" />
             </Link>
           </Button>
         </div>
         
-        <div className="pt-12">
+        <div className="pt-16">
           <TrustedCompanies />
         </div>
 
         {/* Testimonial Carousel */}
-        <div className="pt-12 w-full">
+        <div className="pt-16 w-full">
           <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
               {testimonials.map((testimonial, index) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/2">
-                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 h-full flex flex-col">
+                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/2 p-2">
+                  <div className="saatosa-card p-6 h-full flex flex-col">
                     <div className="flex items-center gap-4 mb-4">
-                      <div className="relative w-16 h-16 rounded-full overflow-hidden">
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden shadow-sm">
                         <img 
                           src={testimonial.image} 
                           alt={testimonial.name}
@@ -106,17 +107,17 @@ export function Hero() {
                       <div>
                         <h3 className="font-medium text-base">{testimonial.name}</h3>
                         <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                        <p className="text-xs text-primary">{testimonial.company}</p>
+                        <p className="text-xs text-primary font-medium">{testimonial.company}</p>
                       </div>
                     </div>
-                    <p className="italic text-muted-foreground">"{testimonial.quote}"</p>
+                    <p className="italic text-muted-foreground">{testimonial.quote}</p>
                   </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
             <div className="hidden md:flex">
-              <CarouselPrevious className="ml-0 -left-4" />
-              <CarouselNext className="mr-0 -right-4" />
+              <CarouselPrevious className="ml-0 -left-4 bg-white/80 backdrop-blur-sm shadow-md" />
+              <CarouselNext className="mr-0 -right-4 bg-white/80 backdrop-blur-sm shadow-md" />
             </div>
           </Carousel>
         </div>

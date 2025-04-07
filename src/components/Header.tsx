@@ -27,7 +27,7 @@ export function Header() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
           <Truck className="h-8 w-8 text-primary" />
-          <span className="font-bold text-xl tracking-tight">DriverMatch</span>
+          <span className="font-display font-bold text-xl tracking-tight">DriverMatch</span>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-8">
@@ -46,24 +46,24 @@ export function Header() {
           <div className="relative">
             <Button 
               variant="outline" 
-              className="hover-lift"
+              className="hover-lift rounded-full bg-white"
               onClick={() => setIsLoginOptionsOpen(!isLoginOptionsOpen)}
             >
               Log in
             </Button>
             
             {isLoginOptionsOpen && (
-              <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 py-1 animate-fade-in">
+              <div className="absolute top-full right-0 mt-2 w-48 saatosa-card py-1 animate-fade-in">
                 <Link 
                   to="/driver-dashboard" 
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md mx-1"
                   onClick={() => setIsLoginOptionsOpen(false)}
                 >
                   <User className="mr-2 h-4 w-4" /> Driver Login
                 </Link>
                 <Link 
                   to="/company-login" 
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md mx-1"
                   onClick={() => setIsLoginOptionsOpen(false)}
                 >
                   <Briefcase className="mr-2 h-4 w-4" /> Company Login
@@ -71,16 +71,16 @@ export function Header() {
               </div>
             )}
           </div>
-          <Button className="hover-lift">
+          <Button className="hover-lift rounded-full">
             <Link to="/driver-registration">Sign up</Link>
           </Button>
         </div>
         
         <button 
-          className="md:hidden text-foreground" 
+          className="md:hidden text-foreground p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-sm" 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
-          {isMobileMenuOpen ? <X /> : <Menu />}
+          {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
       
@@ -114,19 +114,19 @@ export function Header() {
           <div className="flex flex-col space-y-3">
             <Link 
               to="/driver-dashboard" 
-              className="flex items-center py-2 px-3 rounded-md border border-gray-300 bg-background hover:bg-gray-50"
+              className="flex items-center py-2 px-3 rounded-xl bg-white hover:bg-gray-50 shadow-sm"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <User className="mr-2 h-4 w-4" /> Driver Login
             </Link>
             <Link 
               to="/company-login" 
-              className="flex items-center py-2 px-3 rounded-md border border-gray-300 bg-background hover:bg-gray-50"
+              className="flex items-center py-2 px-3 rounded-xl bg-white hover:bg-gray-50 shadow-sm"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <Briefcase className="mr-2 h-4 w-4" /> Company Login
             </Link>
-            <Button className="w-full justify-center" asChild>
+            <Button className="w-full justify-center rounded-xl" asChild>
               <Link to="/driver-registration">Sign up</Link>
             </Button>
           </div>
