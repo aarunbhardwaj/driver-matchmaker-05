@@ -5,7 +5,6 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -78,39 +77,45 @@ const DriverFeedback = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#f9f9fe]">
       <DriverHeader />
-      <main className="flex-grow bg-gray-50">
-        <div className="max-w-4xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-          <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Job Match Feedback</h1>
-            <p className="text-gray-600 mb-6">
+      <main className="flex-grow">
+        <div className="max-w-5xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+          <div className="bg-white shadow-xl rounded-2xl p-8 mb-8">
+            <h1 className="text-3xl font-bold text-[#3a1078] mb-4">Job Match Feedback</h1>
+            <div className="h-1 w-24 bg-[#3a1078] mb-8 rounded-full"></div>
+            
+            <p className="text-gray-600 mb-8 text-lg leading-relaxed">
               Help us improve our AI job matching system by providing feedback on the quality of job matches.
               This information will only be used to train our AI and won't be shared with the companies.
             </p>
             
-            <Alert className="mb-6 bg-purple-50 border-purple-200">
-              <AlertCircle className="h-4 w-4 text-purple-600" />
-              <AlertTitle className="text-purple-800">Privacy Notice</AlertTitle>
-              <AlertDescription className="text-purple-700">
+            <Alert className="mb-8 bg-[#f0eafc] border-[#d4c7f9] rounded-xl">
+              <AlertCircle className="h-5 w-5 text-[#3a1078]" />
+              <AlertTitle className="text-[#3a1078] font-semibold text-lg">Privacy Notice</AlertTitle>
+              <AlertDescription className="text-[#6048ba]">
                 Your feedback is confidential and will only be used to improve our AI matching algorithm.
                 It will not be shared with companies or other drivers. You can view and modify your feedback at any time.
               </AlertDescription>
             </Alert>
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <div className="grid md:grid-cols-2 gap-8">
                   <FormField
                     control={form.control}
                     name="jobId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Job ID (Optional)</FormLabel>
+                        <FormLabel className="text-[#3a1078] text-base font-medium">Job ID (Optional)</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter job ID" {...field} />
+                          <Input 
+                            placeholder="Enter job ID" 
+                            {...field} 
+                            className="rounded-xl border-[#d4c7f9] focus-visible:ring-[#3a1078]"
+                          />
                         </FormControl>
-                        <FormDescription>
+                        <FormDescription className="text-gray-500">
                           If you're providing feedback about a specific job, enter its ID.
                         </FormDescription>
                       </FormItem>
@@ -122,11 +127,15 @@ const DriverFeedback = () => {
                     name="companyName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Company Name (Optional)</FormLabel>
+                        <FormLabel className="text-[#3a1078] text-base font-medium">Company Name (Optional)</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter company name" {...field} />
+                          <Input 
+                            placeholder="Enter company name" 
+                            {...field} 
+                            className="rounded-xl border-[#d4c7f9] focus-visible:ring-[#3a1078]"
+                          />
                         </FormControl>
-                        <FormDescription>
+                        <FormDescription className="text-gray-500">
                           If you're providing feedback about a specific company, enter its name.
                         </FormDescription>
                       </FormItem>
@@ -134,30 +143,34 @@ const DriverFeedback = () => {
                   />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 gap-8">
                   <FormField
                     control={form.control}
                     name="relevanceRating"
                     render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>Job Relevance</FormLabel>
+                      <FormItem className="space-y-3 bg-[#f9f9fe] p-6 rounded-xl border border-[#eeeefe]">
+                        <FormLabel className="text-[#3a1078] text-base font-medium">Job Relevance</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            className="flex flex-col space-y-1"
+                            className="flex flex-col space-y-2"
                           >
                             {[1, 2, 3, 4, 5].map((rating) => (
-                              <div key={rating} className="flex items-center space-x-2">
-                                <RadioGroupItem value={rating.toString()} id={`relevance-${rating}`} />
-                                <label htmlFor={`relevance-${rating}`} className="text-sm">
+                              <div key={rating} className="flex items-center space-x-3">
+                                <RadioGroupItem 
+                                  value={rating.toString()} 
+                                  id={`relevance-${rating}`} 
+                                  className="text-[#3a1078] border-[#d4c7f9]"
+                                />
+                                <label htmlFor={`relevance-${rating}`} className="text-base font-medium">
                                   {rating}: {getRatingLabel(rating)}
                                 </label>
                               </div>
                             ))}
                           </RadioGroup>
                         </FormControl>
-                        <FormDescription>
+                        <FormDescription className="text-gray-500">
                           How relevant was the job to your skills and experience?
                         </FormDescription>
                       </FormItem>
@@ -168,25 +181,29 @@ const DriverFeedback = () => {
                     control={form.control}
                     name="compensationRating"
                     render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>Compensation Match</FormLabel>
+                      <FormItem className="space-y-3 bg-[#f9f9fe] p-6 rounded-xl border border-[#eeeefe]">
+                        <FormLabel className="text-[#3a1078] text-base font-medium">Compensation Match</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            className="flex flex-col space-y-1"
+                            className="flex flex-col space-y-2"
                           >
                             {[1, 2, 3, 4, 5].map((rating) => (
-                              <div key={rating} className="flex items-center space-x-2">
-                                <RadioGroupItem value={rating.toString()} id={`compensation-${rating}`} />
-                                <label htmlFor={`compensation-${rating}`} className="text-sm">
+                              <div key={rating} className="flex items-center space-x-3">
+                                <RadioGroupItem 
+                                  value={rating.toString()} 
+                                  id={`compensation-${rating}`}
+                                  className="text-[#3a1078] border-[#d4c7f9]"
+                                />
+                                <label htmlFor={`compensation-${rating}`} className="text-base font-medium">
                                   {rating}: {getRatingLabel(rating)}
                                 </label>
                               </div>
                             ))}
                           </RadioGroup>
                         </FormControl>
-                        <FormDescription>
+                        <FormDescription className="text-gray-500">
                           How well did the compensation align with your expectations?
                         </FormDescription>
                       </FormItem>
@@ -194,30 +211,34 @@ const DriverFeedback = () => {
                   />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 gap-8">
                   <FormField
                     control={form.control}
                     name="scheduleRating"
                     render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>Schedule/Hours Match</FormLabel>
+                      <FormItem className="space-y-3 bg-[#f9f9fe] p-6 rounded-xl border border-[#eeeefe]">
+                        <FormLabel className="text-[#3a1078] text-base font-medium">Schedule/Hours Match</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            className="flex flex-col space-y-1"
+                            className="flex flex-col space-y-2"
                           >
                             {[1, 2, 3, 4, 5].map((rating) => (
-                              <div key={rating} className="flex items-center space-x-2">
-                                <RadioGroupItem value={rating.toString()} id={`schedule-${rating}`} />
-                                <label htmlFor={`schedule-${rating}`} className="text-sm">
+                              <div key={rating} className="flex items-center space-x-3">
+                                <RadioGroupItem 
+                                  value={rating.toString()} 
+                                  id={`schedule-${rating}`}
+                                  className="text-[#3a1078] border-[#d4c7f9]"
+                                />
+                                <label htmlFor={`schedule-${rating}`} className="text-base font-medium">
                                   {rating}: {getRatingLabel(rating)}
                                 </label>
                               </div>
                             ))}
                           </RadioGroup>
                         </FormControl>
-                        <FormDescription>
+                        <FormDescription className="text-gray-500">
                           How well did the schedule/hours match your preferences?
                         </FormDescription>
                       </FormItem>
@@ -228,25 +249,29 @@ const DriverFeedback = () => {
                     control={form.control}
                     name="locationRating"
                     render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>Location/Route Match</FormLabel>
+                      <FormItem className="space-y-3 bg-[#f9f9fe] p-6 rounded-xl border border-[#eeeefe]">
+                        <FormLabel className="text-[#3a1078] text-base font-medium">Location/Route Match</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            className="flex flex-col space-y-1"
+                            className="flex flex-col space-y-2"
                           >
                             {[1, 2, 3, 4, 5].map((rating) => (
-                              <div key={rating} className="flex items-center space-x-2">
-                                <RadioGroupItem value={rating.toString()} id={`location-${rating}`} />
-                                <label htmlFor={`location-${rating}`} className="text-sm">
+                              <div key={rating} className="flex items-center space-x-3">
+                                <RadioGroupItem 
+                                  value={rating.toString()} 
+                                  id={`location-${rating}`}
+                                  className="text-[#3a1078] border-[#d4c7f9]"
+                                />
+                                <label htmlFor={`location-${rating}`} className="text-base font-medium">
                                   {rating}: {getRatingLabel(rating)}
                                 </label>
                               </div>
                             ))}
                           </RadioGroup>
                         </FormControl>
-                        <FormDescription>
+                        <FormDescription className="text-gray-500">
                           How suitable was the job location or route?
                         </FormDescription>
                       </FormItem>
@@ -258,25 +283,29 @@ const DriverFeedback = () => {
                   control={form.control}
                   name="overallMatchRating"
                   render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel>Overall AI Match Quality</FormLabel>
+                    <FormItem className="space-y-4 bg-[#f0eafc] p-6 rounded-xl border border-[#d4c7f9]">
+                      <FormLabel className="text-[#3a1078] text-xl font-semibold">Overall AI Match Quality</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
                           defaultValue={field.value}
-                          className="flex flex-row space-x-3"
+                          className="flex flex-row justify-between space-x-2 max-w-md mx-auto"
                         >
                           {[1, 2, 3, 4, 5].map((rating) => (
-                            <div key={rating} className="flex flex-col items-center space-y-1">
-                              <RadioGroupItem value={rating.toString()} id={`overall-${rating}`} />
-                              <label htmlFor={`overall-${rating}`} className="text-sm">
+                            <div key={rating} className="flex flex-col items-center space-y-2">
+                              <RadioGroupItem 
+                                value={rating.toString()} 
+                                id={`overall-${rating}`}
+                                className="h-12 w-12 text-[#3a1078] border-[#d4c7f9] before:w-8 before:h-8"
+                              />
+                              <label htmlFor={`overall-${rating}`} className="text-lg font-medium text-[#3a1078]">
                                 {rating}
                               </label>
                             </div>
                           ))}
                         </RadioGroup>
                       </FormControl>
-                      <FormDescription>
+                      <FormDescription className="text-center text-[#6048ba] text-base">
                         How would you rate the overall job match quality? (1: Poor, 5: Excellent)
                       </FormDescription>
                     </FormItem>
@@ -287,14 +316,14 @@ const DriverFeedback = () => {
                   control={form.control}
                   name="jobPreferences"
                   render={() => (
-                    <FormItem>
+                    <FormItem className="bg-white p-6 rounded-xl border border-[#eeeefe]">
                       <div className="mb-4">
-                        <FormLabel className="text-base">Job Preferences Not Considered</FormLabel>
-                        <FormDescription>
+                        <FormLabel className="text-[#3a1078] text-xl font-semibold">Job Preferences Not Considered</FormLabel>
+                        <FormDescription className="text-gray-600">
                           Select any preferences that you feel weren't properly considered in the matching.
                         </FormDescription>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {jobPreferenceOptions.map((item) => (
                           <FormField
                             key={item.id}
@@ -304,7 +333,7 @@ const DriverFeedback = () => {
                               return (
                                 <FormItem
                                   key={item.id}
-                                  className="flex flex-row items-start space-x-3 space-y-0"
+                                  className="flex flex-row items-start space-x-3 space-y-0 bg-[#f9f9fe] p-3 rounded-lg"
                                 >
                                   <FormControl>
                                     <Checkbox
@@ -318,9 +347,10 @@ const DriverFeedback = () => {
                                               )
                                             )
                                       }}
+                                      className="text-[#3a1078] border-[#d4c7f9]"
                                     />
                                   </FormControl>
-                                  <FormLabel className="text-sm font-normal">
+                                  <FormLabel className="text-base font-medium cursor-pointer">
                                     {item.label}
                                   </FormLabel>
                                 </FormItem>
@@ -333,87 +363,92 @@ const DriverFeedback = () => {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="otherPreferences"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Other Preferences</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="List any other job preferences that weren't considered"
-                          {...field}
-                          className="min-h-[80px]"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                <div className="grid md:grid-cols-2 gap-8">
+                  <FormField
+                    control={form.control}
+                    name="otherPreferences"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#3a1078] text-base font-medium">Other Preferences</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="List any other job preferences that weren't considered"
+                            {...field}
+                            className="min-h-[120px] rounded-xl border-[#d4c7f9] focus-visible:ring-[#3a1078]"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
 
-                <FormField
-                  control={form.control}
-                  name="mismatchReasons"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Main Reasons for Mismatch</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Why was this job not a good match for you?"
-                          {...field}
-                          className="min-h-[80px]"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                  <FormField
+                    control={form.control}
+                    name="mismatchReasons"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#3a1078] text-base font-medium">Main Reasons for Mismatch</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Why was this job not a good match for you?"
+                            {...field}
+                            className="min-h-[120px] rounded-xl border-[#d4c7f9] focus-visible:ring-[#3a1078]"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-                <FormField
-                  control={form.control}
-                  name="improvementSuggestions"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Suggestions to Improve Matching</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="What factors should our AI consider more or less in matching?"
-                          {...field}
-                          className="min-h-[100px]"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                <div className="grid md:grid-cols-2 gap-8">
+                  <FormField
+                    control={form.control}
+                    name="improvementSuggestions"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#3a1078] text-base font-medium">Suggestions to Improve Matching</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="What factors should our AI consider more or less in matching?"
+                            {...field}
+                            className="min-h-[120px] rounded-xl border-[#d4c7f9] focus-visible:ring-[#3a1078]"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
 
-                <FormField
-                  control={form.control}
-                  name="additionalNotes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Additional Notes</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Any other feedback about the matching process"
-                          {...field}
-                          className="min-h-[100px]"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                  <FormField
+                    control={form.control}
+                    name="additionalNotes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#3a1078] text-base font-medium">Additional Notes</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Any other feedback about the matching process"
+                            {...field}
+                            className="min-h-[120px] rounded-xl border-[#d4c7f9] focus-visible:ring-[#3a1078]"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <FormField
                   control={form.control}
                   name="permissionToUseData"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 border-t border-gray-200 pt-6">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 border-t border-[#eeeefe] pt-8">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
+                          className="text-[#3a1078] border-[#d4c7f9]"
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
-                        <FormLabel>
+                        <FormLabel className="text-base">
                           I allow DriverMatch to use this feedback to improve the AI matching system
                         </FormLabel>
                         <FormDescription>
@@ -424,7 +459,12 @@ const DriverFeedback = () => {
                   )}
                 />
 
-                <Button type="submit" className="w-full">Submit Feedback</Button>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-[#3a1078] hover:bg-[#4f2f9f] text-lg py-6 rounded-xl"
+                >
+                  Submit Feedback
+                </Button>
               </form>
             </Form>
           </div>
