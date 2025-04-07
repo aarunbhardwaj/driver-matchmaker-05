@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { BriefcaseIcon, Bell, Search, User, Menu, CreditCard } from "lucide-react";
+import { BriefcaseIcon, Bell, Search, User, Menu, CreditCard, MessageSquare } from "lucide-react";
 
 export const CompanyHeader = () => {
   return (
@@ -32,6 +32,10 @@ export const CompanyHeader = () => {
               </Link>
               <Link to="/company-profile?tab=team" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-primary">
                 Team
+              </Link>
+              <Link to="/company-feedback" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-primary">
+                <MessageSquare className="h-4 w-4 inline mr-1" />
+                AI Feedback
               </Link>
             </nav>
           </div>
