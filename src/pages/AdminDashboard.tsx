@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,15 +9,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Users, BriefcaseIcon, Settings } from "lucide-react";
+import { Search, Users, BriefcaseIcon, Settings, ShieldCheck, Clock, AlertCircle, LineChart } from "lucide-react";
+import { DriverVerificationTable } from "@/components/admin/DriverVerificationTable";
 
 // Mock data for demonstration
 const driverData = [
-  { id: 1, name: "John Smith", email: "john@example.com", status: "Active", registeredDate: "2024-02-15", lastActive: "2024-04-01" },
-  { id: 2, name: "Alice Johnson", email: "alice@example.com", status: "Active", registeredDate: "2024-01-10", lastActive: "2024-03-28" },
-  { id: 3, name: "Mike Brown", email: "mike@example.com", status: "Inactive", registeredDate: "2023-11-20", lastActive: "2024-02-15" },
-  { id: 4, name: "Sarah Wilson", email: "sarah@example.com", status: "Active", registeredDate: "2024-03-05", lastActive: "2024-04-03" },
-  { id: 5, name: "David Clark", email: "david@example.com", status: "Suspended", registeredDate: "2023-10-18", lastActive: "2023-12-10" },
+  { id: 1, name: "John Smith", email: "john@example.com", status: "Active", registeredDate: "2024-02-15", lastActive: "2024-04-01", verificationStatus: "verified" },
+  { id: 2, name: "Alice Johnson", email: "alice@example.com", status: "Active", registeredDate: "2024-01-10", lastActive: "2024-03-28", verificationStatus: "verified" },
+  { id: 3, name: "Mike Brown", email: "mike@example.com", status: "Inactive", registeredDate: "2023-11-20", lastActive: "2024-02-15", verificationStatus: "rejected" },
+  { id: 4, name: "Sarah Wilson", email: "sarah@example.com", status: "Active", registeredDate: "2024-03-05", lastActive: "2024-04-03", verificationStatus: "pending" },
+  { id: 5, name: "David Clark", email: "david@example.com", status: "Suspended", registeredDate: "2023-10-18", lastActive: "2023-12-10", verificationStatus: "unverified" },
 ];
 
 const companyData = [
@@ -43,6 +43,11 @@ const AdminDashboard = () => {
     company.name.toLowerCase().includes(companySearchQuery.toLowerCase()) || 
     company.email.toLowerCase().includes(companySearchQuery.toLowerCase())
   );
+
+  // Calculate verification statistics
+  const verifiedDrivers = driverData.filter(d => d.verificationStatus === "verified").length;
+  const pendingVerifications = driverData.filter(d => d.verificationStatus === "pending").length;
+  const rejectedVerifications = driverData.filter(d => d.verificationStatus === "rejected").length;
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -74,11 +79,12 @@ const AdminDashboard = () => {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="drivers">Drivers</TabsTrigger>
             <TabsTrigger value="companies">Companies</TabsTrigger>
+            <TabsTrigger value="verification">Verification</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-2xl">Total Drivers</CardTitle>
@@ -111,17 +117,34 @@ const AdminDashboard = () => {
 
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-2xl">Trial Companies</CardTitle>
+                  <CardTitle className="text-2xl">Verified Drivers</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center">
-                    <BriefcaseIcon className="h-8 w-8 text-amber-500 mr-2" />
+                    <ShieldCheck className="h-8 w-8 text-green-500 mr-2" />
                     <span className="text-4xl font-bold">
-                      {companyData.filter(c => c.status === "Trial").length}
+                      {verifiedDrivers}
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Companies currently in trial period
+                    {((verifiedDrivers / driverData.length) * 100).toFixed(0)}% of all drivers
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-2xl">Pending Verifications</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center">
+                    <Clock className="h-8 w-8 text-amber-500 mr-2" />
+                    <span className="text-4xl font-bold">
+                      {pendingVerifications}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Awaiting review
                   </p>
                 </CardContent>
               </Card>
@@ -139,6 +162,7 @@ const AdminDashboard = () => {
                       <TableRow>
                         <TableHead>Name</TableHead>
                         <TableHead>Status</TableHead>
+                        <TableHead>Verification</TableHead>
                         <TableHead>Registered</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -149,6 +173,21 @@ const AdminDashboard = () => {
                           <TableCell>
                             <Badge variant={driver.status === "Active" ? "default" : "destructive"}>
                               {driver.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge 
+                              variant={
+                                driver.verificationStatus === "verified" ? "default" : 
+                                driver.verificationStatus === "pending" ? "outline" : 
+                                driver.verificationStatus === "rejected" ? "destructive" : 
+                                "secondary"
+                              }
+                            >
+                              {driver.verificationStatus === "verified" ? "Verified" : 
+                               driver.verificationStatus === "pending" ? "Pending" : 
+                               driver.verificationStatus === "rejected" ? "Rejected" : 
+                               "Not Verified"}
                             </Badge>
                           </TableCell>
                           <TableCell>{driver.registeredDate}</TableCell>
@@ -224,6 +263,7 @@ const AdminDashboard = () => {
                       <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Verification</TableHead>
                       <TableHead>Registered Date</TableHead>
                       <TableHead>Last Active</TableHead>
                       <TableHead>Actions</TableHead>
@@ -242,6 +282,21 @@ const AdminDashboard = () => {
                             }
                           >
                             {driver.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant={
+                              driver.verificationStatus === "verified" ? "default" : 
+                              driver.verificationStatus === "pending" ? "outline" : 
+                              driver.verificationStatus === "rejected" ? "destructive" : 
+                              "secondary"
+                            }
+                          >
+                            {driver.verificationStatus === "verified" ? "Verified" : 
+                             driver.verificationStatus === "pending" ? "Pending" : 
+                             driver.verificationStatus === "rejected" ? "Rejected" : 
+                             "Not Verified"}
                           </Badge>
                         </TableCell>
                         <TableCell>{driver.registeredDate}</TableCell>
@@ -322,6 +377,67 @@ const AdminDashboard = () => {
                     ))}
                   </TableBody>
                 </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="verification" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Driver Verification Management</CardTitle>
+                <CardDescription>
+                  Review and manage driver verification requests
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <Clock className="h-5 w-5 text-amber-500 mr-2" />
+                          <div>
+                            <p className="text-sm font-medium">Pending</p>
+                            <p className="text-2xl font-bold">{pendingVerifications}</p>
+                          </div>
+                        </div>
+                        <Button variant="outline" size="sm">View All</Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <ShieldCheck className="h-5 w-5 text-green-500 mr-2" />
+                          <div>
+                            <p className="text-sm font-medium">Verified</p>
+                            <p className="text-2xl font-bold">{verifiedDrivers}</p>
+                          </div>
+                        </div>
+                        <Button variant="outline" size="sm">View All</Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+                          <div>
+                            <p className="text-sm font-medium">Rejected</p>
+                            <p className="text-2xl font-bold">{rejectedVerifications}</p>
+                          </div>
+                        </div>
+                        <Button variant="outline" size="sm">View All</Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+                
+                <DriverVerificationTable />
               </CardContent>
             </Card>
           </TabsContent>

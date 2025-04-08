@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/table";
 import { BriefcaseIcon, CheckCircle, Clock, MapPin, Search, Users, ArrowUpRight } from "lucide-react";
 import { CompanyHeader } from "@/components/CompanyHeader";
+import { KpiWidgets } from "@/components/company-dashboard/KpiWidgets";
 
 const CompanyDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -78,6 +79,7 @@ const CompanyDashboard = () => {
         <Tabs defaultValue="overview" onValueChange={(value) => setActiveTab(value)} className="mb-8">
           <TabsList className="mb-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="kpi">KPI Dashboard</TabsTrigger>
             <TabsTrigger value="jobs">Job Listings</TabsTrigger>
             <TabsTrigger value="candidates">Driver Candidates</TabsTrigger>
             <TabsTrigger value="matches">AI Matches</TabsTrigger>
@@ -169,6 +171,10 @@ const CompanyDashboard = () => {
                 </Table>
               </CardContent>
             </Card>
+          </TabsContent>
+          
+          <TabsContent value="kpi" className="space-y-6">
+            <KpiWidgets />
           </TabsContent>
           
           <TabsContent value="jobs" className="space-y-4">

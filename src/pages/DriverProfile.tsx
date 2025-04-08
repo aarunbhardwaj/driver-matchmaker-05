@@ -1,621 +1,222 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { 
-  User, 
-  FileText, 
-  Award, 
-  MapPin, 
-  Truck, 
-  Calendar, 
-  Phone, 
-  Mail,
-  Edit,
-  Check,
-  X,
-  Briefcase,
-  Star,
-  CreditCard
-} from "lucide-react";
-
 import { DriverHeader } from "@/components/DriverHeader";
 import { Footer } from "@/components/Footer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Calendar, MapPin, Clock, Award, Briefcase, UserCheck } from "lucide-react";
 import { PreferencesForm } from "@/components/driver-profile/PreferencesForm";
-import { toast } from "@/hooks/use-toast";
-
-// Define form schema for profile editing
-const profileFormSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  phone: z.string().min(10, "Please enter a valid phone number"),
-  address: z.string().min(5, "Please enter a valid address"),
-  city: z.string().min(2, "Please enter a valid city"),
-  state: z.string().min(2, "Please enter a valid state"),
-  zipCode: z.string().min(5, "Please enter a valid zip code"),
-  licenseType: z.string().min(1, "License type is required"),
-  licenseNumber: z.string().min(5, "Please enter a valid license number"),
-  licenseExpiration: z.string().min(1, "Expiration date is required"),
-  experience: z.string(),
-  bio: z.string().max(500, "Bio must be 500 characters or less").optional(),
-});
-
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
+import { VerificationStatusCard, VerificationStatus } from "@/components/driver-profile/VerificationStatus";
 
 const DriverProfile = () => {
-  const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
-  const [isPreferencesSubmitting, setIsPreferencesSubmitting] = useState(false);
-
-  // Mock data - in a real app, this would come from an API
-  const driverData = {
-    firstName: "Alex",
-    lastName: "Rodriguez",
-    email: "alex.rodriguez@example.com",
-    phone: "(555) 123-4567",
-    address: "1234 Trucking Lane",
-    city: "Chicago",
-    state: "IL",
-    zipCode: "60601",
-    licenseType: "Class A CDL",
-    licenseNumber: "IL1234567",
-    licenseExpiration: "2025-06-30",
-    experience: "5 years",
-    membershipTier: "free", // Added membership tier
-    bio: "Professional truck driver with experience in long-haul transportation. Specialized in refrigerated freight and hazardous materials. Safe driving record with no accidents.",
-    certifications: [
-      { name: "Hazardous Materials Endorsement", expiry: "2025-06-30" },
-      { name: "Tanker Endorsement", expiry: "2025-06-30" },
-      { name: "Double/Triple Trailer Endorsement", expiry: "2025-06-30" }
-    ],
-    metrics: {
-      jobsCompleted: 127,
-      milesLogged: 105672,
-      onTimeDeliveries: "98%",
-      safetyScore: "Excellent"
-    }
-  };
-
-  // Mock preferences data - in a real app, this would come from an API
-  const preferencesData = {
-    jobTypes: ["truck", "delivery"],
-    vehicleTypes: ["truck", "van"],
-    location: {
-      city: "Chicago",
-      state: "IL",
-      radius: "50",
-    },
-    internationalTravel: false,
-    availability: "full_time",
-    permits: ["cdl_a", "hazmat"],
-    minimumHourlyRate: "22",
-  };
-
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
-    defaultValues: {
-      firstName: driverData.firstName,
-      lastName: driverData.lastName,
-      email: driverData.email,
-      phone: driverData.phone,
-      address: driverData.address,
-      city: driverData.city,
-      state: driverData.state,
-      zipCode: driverData.zipCode,
-      licenseType: driverData.licenseType,
-      licenseNumber: driverData.licenseNumber,
-      licenseExpiration: driverData.licenseExpiration,
-      experience: driverData.experience,
-      bio: driverData.bio,
-    },
-  });
-
-  function onSubmit(data: ProfileFormValues) {
-    console.log(data);
-    // In a real app, this would send the data to an API
-    setIsEditing(false);
-    // Show success message
-    toast({
-      title: "Profile Updated",
-      description: "Your profile has been successfully updated.",
-    });
-  }
-
-  function handlePreferencesSubmit(data: any) {
-    setIsPreferencesSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Preferences data:", data);
-      setIsPreferencesSubmitting(false);
-      toast({
-        title: "Preferences Saved",
-        description: "Your job preferences have been updated.",
-      });
-    }, 1000);
-  }
-
+  // For demonstration, we're using a state variable to track verification status
+  // In a real app, this would come from an API/database
+  const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>("verified");
+  
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col bg-muted/40">
       <DriverHeader />
-      
-      <main className="container mx-auto px-4 py-8 pt-24">
-        <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Driver Profile</h1>
-            <p className="text-muted-foreground">Manage your professional information</p>
+      <main className="flex-1 container mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Profile sidebar */}
+          <div className="w-full md:w-1/3 space-y-6">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center text-center">
+                  <Avatar className="h-24 w-24">
+                    <AvatarImage src="/placeholder.svg" alt="Profile Picture" />
+                    <AvatarFallback>JD</AvatarFallback>
+                  </Avatar>
+                  <h2 className="mt-4 text-2xl font-bold">John Driver</h2>
+                  <p className="text-muted-foreground">Professional Truck Driver</p>
+                  <div className="flex items-center mt-2 text-muted-foreground">
+                    <MapPin className="h-4 w-4 mr-1" /> London, UK
+                  </div>
+                  <Button className="mt-4 w-full">Edit Profile</Button>
+                </div>
+                
+                <div className="border-t mt-6 pt-6">
+                  <h3 className="font-semibold mb-4">Profile Completion</h3>
+                  <div className="w-full bg-muted rounded-full h-2.5">
+                    <div className="bg-primary h-2.5 rounded-full w-[85%]"></div>
+                  </div>
+                  <p className="text-sm text-right mt-1 text-muted-foreground">85% Complete</p>
+                </div>
+                
+                <div className="border-t mt-6 pt-6">
+                  <h3 className="font-semibold mb-4">Quick Stats</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <span className="text-sm">Member Since</span>
+                      </div>
+                      <span className="text-sm font-medium">Jan 2023</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center">
+                        <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <span className="text-sm">Last Active</span>
+                      </div>
+                      <span className="text-sm font-medium">Today</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center">
+                        <Award className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <span className="text-sm">Experience</span>
+                      </div>
+                      <span className="text-sm font-medium">5+ years</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center">
+                        <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <span className="text-sm">Applications</span>
+                      </div>
+                      <span className="text-sm font-medium">12</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center">
+                        <UserCheck className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <span className="text-sm">Verification</span>
+                      </div>
+                      <span className={`text-sm font-medium ${
+                        verificationStatus === "verified" ? "text-green-600" : 
+                        verificationStatus === "pending" ? "text-amber-600" : 
+                        verificationStatus === "rejected" ? "text-red-600" : 
+                        "text-gray-600"
+                      }`}>
+                        {verificationStatus === "verified" ? "Verified" : 
+                         verificationStatus === "pending" ? "Pending" : 
+                         verificationStatus === "rejected" ? "Failed" : 
+                         "Not Verified"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <VerificationStatusCard status={verificationStatus} />
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button onClick={() => navigate('/driver-dashboard')} variant="outline">
-              Back to Dashboard
-            </Button>
-            <Button onClick={() => navigate('/driver-membership')} variant="outline">
-              <Star className="mr-2 h-4 w-4" /> Membership
-              {driverData.membershipTier === "free" && (
-                <Badge className="ml-1.5 bg-primary/20 text-primary text-xs">
-                  Upgrade
-                </Badge>
-              )}
-            </Button>
-            {!isEditing && (
-              <Button onClick={() => setIsEditing(true)}>
-                <Edit className="mr-2 h-4 w-4" /> Edit Profile
-              </Button>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Profile Summary Card */}
-          <Card className="lg:col-span-1">
-            <CardHeader className="text-center">
-              <div className="w-32 h-32 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center">
-                <User className="h-16 w-16 text-primary" />
-              </div>
-              <CardTitle>
-                {driverData.firstName} {driverData.lastName}
-                {driverData.membershipTier !== "free" && (
-                  <div className="mt-2">
-                    <Badge className="bg-primary">
-                      {driverData.membershipTier === "plus" ? "Driver Plus" : "Driver Pro"}
-                    </Badge>
-                  </div>
-                )}
-              </CardTitle>
-              <CardDescription>
-                {driverData.licenseType} Driver
-                {driverData.membershipTier !== "free" && (
-                  <Badge variant="outline" className="ml-2 bg-green-50 text-green-600 border-green-300">
-                    Verified
-                  </Badge>
-                )}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <Mail className="w-4 h-4 mr-2 text-muted-foreground" />
-                  <span>{driverData.email}</span>
-                </div>
-                <div className="flex items-center">
-                  <Phone className="w-4 h-4 mr-2 text-muted-foreground" />
-                  <span>{driverData.phone}</span>
-                </div>
-                <div className="flex items-center">
-                  <MapPin className="w-4 h-4 mr-2 text-muted-foreground" />
-                  <span>{driverData.city}, {driverData.state}</span>
-                </div>
-                <div className="flex items-center">
-                  <Truck className="w-4 h-4 mr-2 text-muted-foreground" />
-                  <span>{driverData.experience} experience</span>
-                </div>
-              </div>
-              
-              <div className="mt-6">
-                <h3 className="font-medium text-sm text-muted-foreground mb-2">DRIVER METRICS</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-muted rounded-lg p-3">
-                    <p className="text-xs text-muted-foreground">Jobs Completed</p>
-                    <p className="text-lg font-semibold">{driverData.metrics.jobsCompleted}</p>
-                  </div>
-                  <div className="bg-muted rounded-lg p-3">
-                    <p className="text-xs text-muted-foreground">Miles Logged</p>
-                    <p className="text-lg font-semibold">{driverData.metrics.milesLogged.toLocaleString()}</p>
-                  </div>
-                  <div className="bg-muted rounded-lg p-3">
-                    <p className="text-xs text-muted-foreground">On-Time</p>
-                    <p className="text-lg font-semibold">{driverData.metrics.onTimeDeliveries}</p>
-                  </div>
-                  <div className="bg-muted rounded-lg p-3">
-                    <p className="text-xs text-muted-foreground">Safety Score</p>
-                    <p className="text-lg font-semibold">{driverData.metrics.safetyScore}</p>
-                  </div>
-                </div>
-              </div>
-              
-              {driverData.membershipTier === "free" && (
-                <div className="mt-6">
-                  <Button className="w-full" onClick={() => navigate('/driver-membership')}>
-                    <Star className="mr-2 h-4 w-4" /> Upgrade Membership
-                  </Button>
-                </div>
-              )}
-              
-              <div className="mt-4">
-                <Button variant="outline" className="w-full" onClick={() => navigate('/driver-billing')}>
-                  <CreditCard className="mr-2 h-4 w-4" /> Billing Settings
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Main Content Area */}
-          <div className="lg:col-span-2">
-            <Tabs defaultValue="details">
+          {/* Profile main content */}
+          <div className="w-full md:w-2/3">
+            <Tabs defaultValue="profile">
               <TabsList className="mb-6">
-                <TabsTrigger value="details">
-                  <FileText className="w-4 h-4 mr-2" />
-                  Details
-                </TabsTrigger>
-                <TabsTrigger value="certifications">
-                  <Award className="w-4 h-4 mr-2" />
-                  Certifications
-                </TabsTrigger>
-                <TabsTrigger value="preferences">
-                  <Briefcase className="w-4 h-4 mr-2" />
-                  Job Preferences
-                </TabsTrigger>
+                <TabsTrigger value="profile">Profile</TabsTrigger>
+                <TabsTrigger value="resume">Resume</TabsTrigger>
+                <TabsTrigger value="preferences">Preferences</TabsTrigger>
+                <TabsTrigger value="documents">Documents</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="details">
-                {isEditing ? (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Edit Your Profile</CardTitle>
-                      <CardDescription>
-                        Update your personal and professional information
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={form.control}
-                              name="firstName"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>First Name</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="lastName"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Last Name</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="email"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Email</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="phone"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Phone</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <div>
-                            <h3 className="text-lg font-medium mb-4">Address</h3>
-                            <div className="grid grid-cols-1 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="address"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Street Address</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <FormField
-                                  control={form.control}
-                                  name="city"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>City</FormLabel>
-                                      <FormControl>
-                                        <Input {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name="state"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>State</FormLabel>
-                                      <FormControl>
-                                        <Input {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name="zipCode"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Zip Code</FormLabel>
-                                      <FormControl>
-                                        <Input {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          <div>
-                            <h3 className="text-lg font-medium mb-4">Professional Information</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="licenseType"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>License Type</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="licenseNumber"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>License Number</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="licenseExpiration"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>License Expiration</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} type="date" />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="experience"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Years of Experience</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                          </div>
-                          
-                          <FormField
-                            control={form.control}
-                            name="bio"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Bio</FormLabel>
-                                <FormControl>
-                                  <Textarea {...field} rows={5} className="resize-none" />
-                                </FormControl>
-                                <FormDescription>
-                                  Briefly describe your experience and specialties as a driver
-                                </FormDescription>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <div className="flex justify-end space-x-4">
-                            <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                              <X className="mr-2 h-4 w-4" /> Cancel
-                            </Button>
-                            <Button type="submit">
-                              <Check className="mr-2 h-4 w-4" /> Save Changes
-                            </Button>
-                          </div>
-                        </form>
-                      </Form>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Driver Information</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-6">
-                        <div>
-                          <h3 className="text-lg font-medium mb-3">Personal Information</h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-sm text-muted-foreground">Full Name</p>
-                              <p>{driverData.firstName} {driverData.lastName}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Email</p>
-                              <p>{driverData.email}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Phone</p>
-                              <p>{driverData.phone}</p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <h3 className="text-lg font-medium mb-3">Address</h3>
-                          <p>{driverData.address}</p>
-                          <p>{driverData.city}, {driverData.state} {driverData.zipCode}</p>
-                        </div>
-                        
-                        <div>
-                          <h3 className="text-lg font-medium mb-3">License Information</h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-sm text-muted-foreground">License Type</p>
-                              <p>{driverData.licenseType}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">License Number</p>
-                              <p>{driverData.licenseNumber}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Expiration Date</p>
-                              <p>{new Date(driverData.licenseExpiration).toLocaleDateString()}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Years of Experience</p>
-                              <p>{driverData.experience}</p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <h3 className="text-lg font-medium mb-3">Bio</h3>
-                          <p className="whitespace-pre-line">{driverData.bio}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="certifications">
+              <TabsContent value="profile" className="space-y-6">
                 <Card>
-                  <CardHeader className="flex flex-row items-center justify-between">
-                    <div>
-                      <CardTitle>Certifications & Endorsements</CardTitle>
-                      <CardDescription>Your professional qualifications and endorsements</CardDescription>
-                    </div>
-                    <Button variant="outline">
-                      <Edit className="mr-2 h-4 w-4" /> Manage
-                    </Button>
+                  <CardHeader>
+                    <CardTitle>About Me</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      {driverData.certifications.map((cert, index) => (
-                        <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                          <div className="flex items-center">
-                            <Award className="h-5 w-5 text-primary mr-3" />
-                            <div>
-                              <p className="font-medium">{cert.name}</p>
-                              <p className="text-sm text-muted-foreground">
-                                Expires: {new Date(cert.expiry).toLocaleDateString()}
-                              </p>
-                            </div>
-                          </div>
-                          <Badge variant="outline" className="bg-green-50 text-green-600 border-green-300">
-                            Active
-                          </Badge>
-                        </div>
-                      ))}
-                      
-                      <div className="mt-6 flex justify-center">
-                        <Button variant="outline">
-                          Add New Certification
-                        </Button>
+                    <p className="text-muted-foreground">
+                      Professional truck driver with over 5 years of experience in long-haul and regional deliveries. 
+                      Excellent safety record with no accidents or violations. Experienced with temperature-controlled 
+                      freight, hazardous materials, and oversized loads. Looking for opportunities with companies that 
+                      value safety, reliability, and work-life balance.
+                    </p>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Experience</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div>
+                      <div className="flex justify-between">
+                        <h3 className="font-semibold">Long-Haul Driver</h3>
+                        <span className="text-sm text-muted-foreground">2021 - Present</span>
                       </div>
+                      <h4 className="text-muted-foreground">Express Logistics</h4>
+                      <p className="mt-2 text-sm">
+                        Responsible for cross-country freight deliveries, ensuring on-time arrival and maintaining 
+                        vehicle safety standards. Consistently received top ratings for timeliness and cargo condition.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <div className="flex justify-between">
+                        <h3 className="font-semibold">Regional Delivery Driver</h3>
+                        <span className="text-sm text-muted-foreground">2018 - 2021</span>
+                      </div>
+                      <h4 className="text-muted-foreground">City Haulers</h4>
+                      <p className="mt-2 text-sm">
+                        Handled regional deliveries within a 300-mile radius. Managed loading and unloading of cargo 
+                        and maintained detailed logs compliant with regulations.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Certifications</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="font-semibold">Commercial Driver's License (CDL) Class A</h3>
+                        <p className="text-sm text-muted-foreground">State Department of Transportation</p>
+                      </div>
+                      <span className="text-sm text-muted-foreground">Expires: 2026</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="font-semibold">Hazardous Materials Endorsement</h3>
+                        <p className="text-sm text-muted-foreground">Federal Motor Carrier Safety Administration</p>
+                      </div>
+                      <span className="text-sm text-muted-foreground">Expires: 2025</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="font-semibold">Tanker Vehicles Endorsement</h3>
+                        <p className="text-sm text-muted-foreground">State Department of Transportation</p>
+                      </div>
+                      <span className="text-sm text-muted-foreground">Expires: 2026</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="resume">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Resume</CardTitle>
+                    <CardDescription>Your uploaded resume and related settings</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">Resume content will be implemented in a future update.</p>
                     </div>
                   </CardContent>
                 </Card>
               </TabsContent>
               
               <TabsContent value="preferences">
+                <PreferencesForm />
+              </TabsContent>
+              
+              <TabsContent value="documents">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Job Preferences</CardTitle>
-                    <CardDescription>
-                      Set your work preferences to help us match you with the right opportunities
-                    </CardDescription>
+                    <CardTitle>Documents & Licenses</CardTitle>
+                    <CardDescription>Your uploaded documents and licenses</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <PreferencesForm 
-                      onSubmit={handlePreferencesSubmit} 
-                      isSubmitting={isPreferencesSubmitting} 
-                      defaultValues={preferencesData}
-                    />
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">Documents section will be implemented in a future update.</p>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -623,7 +224,6 @@ const DriverProfile = () => {
           </div>
         </div>
       </main>
-      
       <Footer />
     </div>
   );
