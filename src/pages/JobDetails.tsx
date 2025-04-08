@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DriverHeader } from "@/components/DriverHeader";
 import { Footer } from "@/components/Footer";
@@ -107,6 +107,15 @@ const JobDetails = () => {
   const [isApplying, setIsApplying] = useState(false);
   const [applicationStep, setApplicationStep] = useState(1);
   
+  useEffect(() => {
+    console.log("JobDetails component mounted. Job ID from params:", jobId);
+    console.log("Available jobs:", jobsData.map(job => job.id));
+    
+    // Check if the job exists in our mock data
+    const job = jobsData.find(j => j.id === jobId);
+    console.log("Found job:", job ? "Yes" : "No");
+  }, [jobId]);
+  
   // Find the job details from our mock data
   const job = jobsData.find(j => j.id === jobId);
   
@@ -119,7 +128,7 @@ const JobDetails = () => {
             <CardContent className="pt-6">
               <div className="text-center py-12">
                 <h2 className="text-2xl font-bold mb-2">Job Not Found</h2>
-                <p className="text-muted-foreground mb-6">The job you're looking for doesn't exist or has been removed.</p>
+                <p className="text-muted-foreground mb-6">The job you're looking for (ID: {jobId}) doesn't exist or has been removed.</p>
                 <Button onClick={() => navigate('/driver-search')}>Back to Job Search</Button>
               </div>
             </CardContent>
