@@ -20,6 +20,8 @@ import JobCreation from "./pages/JobCreation";
 import AdminDashboard from "./pages/AdminDashboard";
 import CompanyFeedback from "./pages/CompanyFeedback";
 import DriverFeedback from "./pages/DriverFeedback";
+import JobDetails from "./pages/JobDetails";
+import DriverApplications from "./pages/DriverApplications";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +47,8 @@ const App = () => (
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/company-feedback" element={<CompanyFeedback />} />
           <Route path="/driver-feedback" element={<DriverFeedback />} />
+          <Route path="/job-details/:jobId" element={<JobDetails />} />
+          <Route path="/driver-applications" element={<DriverApplications />} />
           {/* Add more routes here later */}
           <Route path="*" element={<NotFound />} />
         </Routes>

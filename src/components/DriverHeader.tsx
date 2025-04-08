@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Truck, Bell, Search, User, Menu, CreditCard, MessageSquare, X } from "lucide-react";
+import { Truck, Bell, Search, User, Menu, CreditCard, MessageSquare, X, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const DriverHeader = () => {
@@ -28,6 +28,10 @@ export const DriverHeader = () => {
               </Link>
               <Link to="/driver-search" className={`px-3 py-2 text-sm font-medium ${isActive('/driver-search')}`}>
                 Find Jobs
+              </Link>
+              <Link to="/driver-applications" className={`px-3 py-2 text-sm font-medium ${isActive('/driver-applications')}`}>
+                <FileText className="h-4 w-4 inline mr-1" />
+                Applications
               </Link>
               <Link to="/driver-profile" className={`px-3 py-2 text-sm font-medium ${isActive('/driver-profile')}`}>
                 My Profile
@@ -88,6 +92,14 @@ export const DriverHeader = () => {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Find Jobs
+              </Link>
+              <Link 
+                to="/driver-applications" 
+                className={`px-4 py-2 rounded-md ${isActive('/driver-applications')}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Applications
               </Link>
               <Link 
                 to="/driver-profile" 
