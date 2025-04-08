@@ -9,11 +9,23 @@ import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Clock, Award, Briefcase, UserCheck } from "lucide-react";
 import { PreferencesForm } from "@/components/driver-profile/PreferencesForm";
 import { VerificationStatusCard, VerificationStatus } from "@/components/driver-profile/VerificationStatus";
+import { toast } from "sonner";
 
 const DriverProfile = () => {
   // For demonstration, we're using a state variable to track verification status
   // In a real app, this would come from an API/database
   const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>("verified");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const handlePreferencesSubmit = (data: any) => {
+    setIsSubmitting(true);
+    // Simulate API call
+    setTimeout(() => {
+      console.log("Preferences data:", data);
+      toast.success("Preferences saved successfully!");
+      setIsSubmitting(false);
+    }, 1500);
+  };
   
   return (
     <div className="min-h-screen flex flex-col bg-muted/40">
@@ -204,7 +216,10 @@ const DriverProfile = () => {
               </TabsContent>
               
               <TabsContent value="preferences">
-                <PreferencesForm />
+                <PreferencesForm 
+                  onSubmit={handlePreferencesSubmit} 
+                  isSubmitting={isSubmitting}
+                />
               </TabsContent>
               
               <TabsContent value="documents">
